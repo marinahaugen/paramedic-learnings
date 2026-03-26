@@ -41,7 +41,7 @@ export default function RootLayout({
         </header>
         <main className="flex-1">{children}</main>
         <footer className="border-t border-slate-200 bg-white py-6 text-center text-sm text-slate-400">
-          Built for ambulance personnel -- share knowledge, save lives.
+          Built for ambulance personnel — share knowledge, save lives.
         </footer>
       </body>
     </html>
