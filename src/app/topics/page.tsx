@@ -1,19 +1,40 @@
+import { Suspense } from "react";
 import { db } from "@/db";
-import { topics } from "@/db/schema";
-import { desc } from "drizzle-orm";
+import { topics, AREAS } from "@/db/schema";
+import { desc, ilike, eq, and, or } from "drizzle-orm";
+import { z } from "zod";
+import { TopicFilters } from "./TopicFilters";
 import { formatAge } from "./utils";
 
-export default async function TopicsPage() {
+const areaSchema = z.enum(AREAS).optional().catch(undefined);
+
+export default async function TopicsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string; area?: string }>;
+}) {
+  const { q, area: rawArea } = await searchParams;
+  const area = areaSchema.parse(rawArea);
+
   const allTopics = await db
     .select({
       id: topics.id,
       title: topics.title,
       summary: topics.summary,
       createdBy: topics.createdBy,
-      createdAt: topics.createdAt,
+      updatedAt: topics.updatedAt,
+      area: topics.area,
     })
     .from(topics)
-    .orderBy(desc(topics.createdAt));
+    .where(
+      and(
+        q ? or(ilike(topics.title, `%${q}%`), ilike(topics.summary, `%${q}%`)) : undefined,
+        area ? eq(topics.area, area) : undefined,
+      )
+    )
+    .orderBy(desc(topics.updatedAt));
+
+  const isFiltered = Boolean(q || area);
 
   return (
     <div className="mx-auto max-w-4xl px-6 py-10">
@@ -33,7 +54,13 @@ export default async function TopicsPage() {
         </a>
       </div>
 
-      {allTopics.length === 0 ? (
+      <div className="mb-6">
+        <Suspense>
+          <TopicFilters />
+        </Suspense>
+      </div>
+
+      {allTopics.length === 0 && !isFiltered ? (
         <div className="flex flex-col items-center justify-center py-24 text-center">
           <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center mb-4">
             <span className="text-2xl">📋</span>
@@ -49,6 +76,16 @@ export default async function TopicsPage() {
             Create a topic →
           </a>
         </div>
+      ) : allTopics.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-24 text-center">
+          <p className="text-slate-500 font-medium">No topics match your search</p>
+          <a
+            href="/topics"
+            className="text-sm font-medium text-emerald-600 hover:text-emerald-700 transition-colors mt-3"
+          >
+            Clear filters
+          </a>
+        </div>
       ) : (
         <ul className="space-y-3">
           {allTopics.map((topic, i) => (
@@ -57,7 +94,10 @@ export default async function TopicsPage() {
               className="animate-fade-up"
               style={{ animationDelay: `${i * 60}ms` }}
             >
-              <div className="group flex items-start rounded-lg border border-slate-200 bg-white overflow-hidden hover:border-slate-300 hover:shadow-sm transition-all duration-150 hover:-translate-y-px">
+              <a
+                href={`/topics/${topic.id}`}
+                className="group flex items-start rounded-lg border border-slate-200 bg-white overflow-hidden hover:border-slate-300 hover:shadow-sm transition-all duration-150 hover:-translate-y-px"
+              >
                 <div className="w-1 self-stretch bg-emerald-500 shrink-0" />
                 <div className="flex-1 px-5 py-4">
                   <div className="flex items-start justify-between gap-4">
@@ -72,10 +112,18 @@ export default async function TopicsPage() {
                     {topic.summary}
                   </p>
                   <p className="mt-3 text-xs font-mono text-slate-400">
-                    {topic.createdBy} · {formatAge(topic.createdAt)}
+                    {topic.createdBy} · {formatAge(topic.updatedAt)}
+                    {topic.area && (
+                      <>
+                        {" · "}
+                        <span className="inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700 font-sans">
+                          {topic.area}
+                        </span>
+                      </>
+                    )}
                   </p>
                 </div>
-              </div>
+              </a>
             </li>
           ))}
         </ul>
