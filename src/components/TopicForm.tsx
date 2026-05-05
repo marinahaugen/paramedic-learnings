@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { TopicCard } from "./TopicCard";
+import { createTopic } from "@/app/actions/topics";
 
 interface FieldProps {
   label: string;
@@ -99,8 +100,12 @@ export function TopicForm() {
     e.preventDefault();
     if (!isValid) return;
     setStatus("submitting");
-    await new Promise((r) => setTimeout(r, 600));
-    setStatus("submitted");
+    await createTopic({
+      title: form.title.trim(),
+      summary: form.summary.trim(),
+      guidance: form.guidance.trim(),
+      owner: form.owner.trim() || undefined,
+    });
   }
 
   if (status === "submitted") {
