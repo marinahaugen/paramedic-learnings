@@ -23,7 +23,8 @@ export async function getTopics(params?: { q?: string; area?: string }) {
   const conditions: SQL[] = [];
 
   if (params?.q) {
-    const pattern = `%${params.q}%`;
+    const escaped = params.q.replace(/[\\%_]/g, "\\$&");
+    const pattern = `%${escaped}%`;
     const searchCondition = or(
       ilike(topics.title, pattern),
       ilike(topics.summary, pattern),
