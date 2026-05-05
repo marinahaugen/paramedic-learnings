@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { createTopic, type CreateTopicState } from "../actions";
+import { AREAS } from "@/db/schema";
 
 const labelClass = "block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5";
 const inputClass = "block w-full rounded-md border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-colors";
@@ -50,6 +51,26 @@ export function CreateTopicForm() {
       </div>
 
       <div>
+        <label htmlFor="area" className={labelClass}>
+          Area
+        </label>
+        <select
+          id="area"
+          name="area"
+          className={inputClass}
+          aria-describedby={state?.errors?.area ? "area-error" : undefined}
+        >
+          <option value="">— Select area (optional) —</option>
+          {AREAS.map((a) => (
+            <option key={a} value={a}>
+              {a.charAt(0).toUpperCase() + a.slice(1)}
+            </option>
+          ))}
+        </select>
+        <FieldError id="area-error" messages={state?.errors?.area} />
+      </div>
+
+      <div>
         <label htmlFor="guidance" className={labelClass}>
           Guidance <span className="text-red-400">*</span>
         </label>
@@ -62,6 +83,21 @@ export function CreateTopicForm() {
           aria-describedby={state?.errors?.guidance ? "guidance-error" : undefined}
         />
         <FieldError id="guidance-error" messages={state?.errors?.guidance} />
+      </div>
+
+      <div>
+        <label htmlFor="rationale" className={labelClass}>
+          Rationale
+        </label>
+        <textarea
+          id="rationale"
+          name="rationale"
+          rows={4}
+          placeholder="Why does this guidance exist? Evidence base, background, or clinical reasoning…"
+          className={`${inputClass} resize-y leading-relaxed`}
+          aria-describedby={state?.errors?.rationale ? "rationale-error" : undefined}
+        />
+        <FieldError id="rationale-error" messages={state?.errors?.rationale} />
       </div>
 
       <div className="flex items-center gap-4 pt-2">
