@@ -1,13 +1,27 @@
 import Link from "next/link";
-import { getTopics } from "@/app/actions/topics";
+import { Suspense } from "react";
+import { getAreas, getTopics } from "@/app/actions/topics";
 import { TopicCard } from "@/components/TopicCard";
+import { TopicsToolbar } from "@/components/TopicsToolbar";
 
-export default async function TopicsPage() {
-  const topics = await getTopics();
+export default async function TopicsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string; area?: string }>;
+}) {
+  const { q, area } = await searchParams;
+  const [topics, areas] = await Promise.all([getTopics({ q, area }), getAreas()]);
 
   return (
     <div style={{ maxWidth: "900px", margin: "0 auto", padding: "32px 24px" }}>
-      <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", marginBottom: "32px" }}>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "flex-end",
+          justifyContent: "space-between",
+          marginBottom: "32px",
+        }}
+      >
         <div>
           <div
             style={{
@@ -52,6 +66,10 @@ export default async function TopicsPage() {
         </Link>
       </div>
 
+      <Suspense fallback={null}>
+        <TopicsToolbar areas={areas} />
+      </Suspense>
+
       {topics.length === 0 ? (
         <div
           style={{
@@ -70,14 +88,23 @@ export default async function TopicsPage() {
               textTransform: "uppercase",
             }}
           >
-            Ingen topics ennå — opprett det første
+            {q || area
+              ? `Ingen resultater${q ? ` for «${q}»` : ""}${area ? ` i ${area}` : ""}`
+              : "Ingen topics ennå — opprett det første"}
           </p>
         </div>
       ) : (
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "16px" }}>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
+            gap: "16px",
+          }}
+        >
           {topics.map((topic) => (
             <TopicCard
               key={topic.id}
+              id={topic.id}
               title={topic.title}
               summary={topic.summary}
               owner={topic.owner ?? undefined}
