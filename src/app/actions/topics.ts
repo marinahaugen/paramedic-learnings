@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { db } from "@/db";
 import { sources, topics } from "@/db/schema";
+import type { SQL } from "drizzle-orm";
 import { and, desc, eq, ilike, isNotNull, or } from "drizzle-orm";
 
 export async function createTopic(data: {
@@ -19,7 +20,7 @@ export async function createTopic(data: {
 }
 
 export async function getTopics(params?: { q?: string; area?: string }) {
-  const conditions = [];
+  const conditions: SQL[] = [];
 
   if (params?.q) {
     const pattern = `%${params.q}%`;
@@ -36,13 +37,7 @@ export async function getTopics(params?: { q?: string; area?: string }) {
   }
 
   const base = db.select().from(topics);
-  const filtered =
-    conditions.length === 0
-      ? base
-      : conditions.length === 1
-        ? base.where(conditions[0])
-        : base.where(and(...conditions));
-
+  const filtered = conditions.length > 0 ? base.where(and(...conditions)) : base;
   return filtered.orderBy(desc(topics.createdAt));
 }
 
