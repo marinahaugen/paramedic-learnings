@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getSourcesByTopicId, getTopicById } from "@/app/actions/topics";
@@ -182,21 +183,22 @@ export default async function TopicPage({
   );
 }
 
-function Section({ label, children }: { label: string; children: React.ReactNode }) {
+function Section({ label, children }: { label: string; children: ReactNode }) {
   return (
     <div style={{ marginBottom: "32px" }}>
-      <div
+      <h2
         style={{
           fontFamily: "var(--font-ibm-mono)",
           color: "var(--text-faint)",
           fontSize: "10px",
+          fontWeight: 700,
           letterSpacing: "0.1em",
           textTransform: "uppercase",
           marginBottom: "12px",
         }}
       >
         — {label}
-      </div>
+      </h2>
       {children}
     </div>
   );
