@@ -1,8 +1,10 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo } from "react";
 
 export interface TopicCardProps {
+  id?: number;
   title?: string;
   summary?: string;
   owner?: string;
@@ -11,6 +13,7 @@ export interface TopicCardProps {
 }
 
 export function TopicCard({
+  id,
   title,
   summary,
   owner,
@@ -18,11 +21,16 @@ export function TopicCard({
   isDraft = false,
 }: TopicCardProps) {
   const today = useMemo(
-    () => new Date().toLocaleDateString("nb-NO", { day: "2-digit", month: "2-digit", year: "numeric" }),
-    []
+    () =>
+      new Date().toLocaleDateString("nb-NO", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      }),
+    [],
   );
 
-  return (
+  const card = (
     <article
       style={{
         background: "var(--bg-surface)",
@@ -122,4 +130,14 @@ export function TopicCard({
       </div>
     </article>
   );
+
+  if (id && !isDraft) {
+    return (
+      <Link href={`/topics/${id}`} style={{ textDecoration: "none", display: "block" }}>
+        {card}
+      </Link>
+    );
+  }
+
+  return card;
 }
