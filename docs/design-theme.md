@@ -58,7 +58,7 @@ src/app/topics/actions.ts     ← createTopic server action (new)
 - Page heading "Topics" with subtext and a `+ New Topic` button linking to `/topics/new`
 - One card per topic showing: title, summary, "Created by system · [relative time]"
 - No pagination or search (Story 3)
-- Empty state for zero topics
+- Empty state for zero topics: short message ("No topics yet") + link to `/topics/new`
 
 ### `/topics/new` — Create form
 

@@ -1,0 +1,96 @@
+import { db } from "@/db";
+import { topics } from "@/db/schema";
+import { desc } from "drizzle-orm";
+
+function formatAge(date: Date): string {
+  const seconds = Math.floor((Date.now() - date.getTime()) / 1000);
+  if (seconds < 60) return "just now";
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return `${minutes}m ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  if (days < 30) return `${days}d ago`;
+  return date.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+}
+
+export default async function TopicsPage() {
+  const allTopics = await db
+    .select({
+      id: topics.id,
+      title: topics.title,
+      summary: topics.summary,
+      createdBy: topics.createdBy,
+      createdAt: topics.createdAt,
+    })
+    .from(topics)
+    .orderBy(desc(topics.createdAt));
+
+  return (
+    <div className="mx-auto max-w-4xl px-6 py-10">
+      <div className="flex items-end justify-between mb-8">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight text-slate-900">Topics</h1>
+          <p className="mt-1 text-sm text-slate-500">
+            Operational guidance for ambulance personnel
+          </p>
+        </div>
+        <a
+          href="/topics/new"
+          className="inline-flex items-center gap-1.5 rounded-md bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-700 transition-colors shrink-0"
+        >
+          <span aria-hidden className="text-emerald-400">+</span>
+          New Topic
+        </a>
+      </div>
+
+      {allTopics.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-24 text-center">
+          <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center mb-4">
+            <span className="text-2xl">📋</span>
+          </div>
+          <p className="text-slate-500 font-medium">No topics yet</p>
+          <p className="text-slate-400 text-sm mt-1 mb-6">
+            Create the first operational guidance topic.
+          </p>
+          <a
+            href="/topics/new"
+            className="text-sm font-medium text-emerald-600 hover:text-emerald-700 transition-colors"
+          >
+            Create a topic →
+          </a>
+        </div>
+      ) : (
+        <ul className="space-y-3">
+          {allTopics.map((topic, i) => (
+            <li
+              key={topic.id}
+              className="animate-fade-up"
+              style={{ animationDelay: `${i * 60}ms` }}
+            >
+              <div className="group flex items-start rounded-lg border border-slate-200 bg-white overflow-hidden hover:border-slate-300 hover:shadow-sm transition-all duration-150 hover:-translate-y-px">
+                <div className="w-1 self-stretch bg-emerald-500 shrink-0" />
+                <div className="flex-1 px-5 py-4">
+                  <div className="flex items-start justify-between gap-4">
+                    <h2 className="text-base font-semibold text-slate-900 leading-snug">
+                      {topic.title}
+                    </h2>
+                    <span className="text-slate-300 text-sm group-hover:text-slate-400 transition-colors shrink-0 mt-0.5">
+                      →
+                    </span>
+                  </div>
+                  <p className="mt-1 text-sm text-slate-500 leading-relaxed line-clamp-2">
+                    {topic.summary}
+                  </p>
+                  <p className="mt-3 text-xs font-mono text-slate-400">
+                    {topic.createdBy} · {formatAge(topic.createdAt)}
+                  </p>
+                </div>
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}

@@ -36,6 +36,11 @@ export default function RootLayout({
                 Paramedic Learnings
               </span>
             </a>
+            <nav className="flex items-center gap-6">
+              <a href="/topics" className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">
+                Topics
+              </a>
+            </nav>
           </div>
         </header>
         <main className="flex-1">{children}</main>
