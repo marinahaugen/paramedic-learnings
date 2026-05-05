@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { TopicCard } from "./TopicCard";
 import { createTopic } from "@/app/actions/topics";
@@ -314,7 +315,7 @@ export function TopicForm() {
               >
                 {submitting ? "OPPRETTER..." : "OPPRETT TOPIC"}
               </button>
-              <a
+              <Link
                 href="/"
                 style={{
                   background: "transparent",
@@ -333,7 +334,7 @@ export function TopicForm() {
                 }}
               >
                 AVBRYT
-              </a>
+              </Link>
             </div>
           </form>
         </div>
