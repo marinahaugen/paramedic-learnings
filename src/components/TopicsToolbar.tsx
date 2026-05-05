@@ -31,10 +31,10 @@ export function TopicsToolbar({ areas }: TopicsToolbarProps) {
     [router, pathname, searchParams],
   );
 
-  const handleSearch = (value: string) => {
+  const handleSearch = useCallback((value: string) => {
     clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => updateParams({ q: value }), 300);
-  };
+  }, [updateParams]);
 
   const handleArea = (value: string) => {
     updateParams({ area: activeArea === value ? "" : value });
@@ -44,6 +44,7 @@ export function TopicsToolbar({ areas }: TopicsToolbarProps) {
     <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginBottom: "28px" }}>
       <input
         type="text"
+        aria-label="Søk i topics"
         defaultValue={q}
         onChange={(e) => handleSearch(e.target.value)}
         placeholder="Søk i topics..."
@@ -65,6 +66,8 @@ export function TopicsToolbar({ areas }: TopicsToolbarProps) {
           {areas.map((a) => (
             <button
               key={a}
+              type="button"
+              aria-pressed={activeArea === a}
               onClick={() => handleArea(a)}
               style={{
                 background: activeArea === a ? "var(--accent)" : "var(--bg-raised)",
