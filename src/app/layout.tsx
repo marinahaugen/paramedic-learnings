@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, DM_Serif_Display } from "next/font/google";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -9,6 +9,12 @@ const geistSans = Geist({
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
+
+const dmSerifDisplay = DM_Serif_Display({
+  variable: "--font-display",
+  weight: "400",
   subsets: ["latin"],
 });
 
@@ -26,7 +32,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${dmSerifDisplay.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-slate-50 font-[family-name:var(--font-geist-sans)]">
         <header className="border-b border-slate-200 bg-white">
@@ -36,6 +42,14 @@ export default function RootLayout({
                 Paramedic Learnings
               </span>
             </a>
+            <nav>
+              <a
+                href="/topics"
+                className="text-sm font-medium text-slate-600 transition-colors hover:text-slate-900"
+              >
+                Topics
+              </a>
+            </nav>
           </div>
         </header>
         <main className="flex-1">{children}</main>

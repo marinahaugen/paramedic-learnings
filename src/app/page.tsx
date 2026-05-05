@@ -1,17 +1,38 @@
+import Link from "next/link";
+
 export default function Home() {
   return (
     <div className="mx-auto max-w-2xl px-6 py-20">
-      <h1 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+      <h1
+        className="text-4xl leading-tight text-slate-900 sm:text-5xl"
+        style={{ fontFamily: "var(--font-display)" }}
+      >
         Paramedic Learnings
       </h1>
       <p className="mt-4 text-lg text-slate-500">
-        A starting point for the agentic-coding course. The skeleton is intentionally empty — the user stories in{" "}
-        <code className="rounded bg-slate-100 px-1.5 py-0.5 text-sm text-slate-700">docs/user-stories.md</code>{" "}
-        are yours to implement.
+        A knowledge platform for ambulance personnel. Capture field experience,
+        review evidence, and keep operational guidance current — with AI
+        assistance and human approval.
       </p>
-      <p className="mt-6 text-sm text-slate-500">
-        Begin with <strong>Story 1: Create a topic manually</strong>.
-      </p>
+      <div className="mt-8">
+        <Link
+          href="/topics"
+          className="inline-flex items-center gap-2 rounded-lg px-6 py-3 text-sm font-medium text-white transition-all hover:opacity-90 active:scale-95"
+          style={{ background: "var(--navy)" }}
+        >
+          Browse topics
+          <svg
+            width="14"
+            height="14"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+          </svg>
+        </Link>
+      </div>
     </div>
   );
 }
