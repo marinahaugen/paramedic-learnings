@@ -13,7 +13,8 @@ export default async function TopicsPage({
 }: {
   searchParams: Promise<{ q?: string; area?: string }>;
 }) {
-  const { q, area: rawArea } = await searchParams;
+  const { q: rawQ, area: rawArea } = await searchParams;
+  const q = rawQ?.trim() || undefined;
   const area = areaSchema.parse(rawArea);
 
   const allTopics = await db
