@@ -84,6 +84,65 @@ function Field({ label, id, required, multiline, rows = 4, value, onChange, plac
   );
 }
 
+interface SelectFieldProps {
+  label: string;
+  id: string;
+  value: string;
+  onChange: (value: string) => void;
+  options: { value: string; label: string }[];
+}
+
+function SelectField({ label, id, value, onChange, options }: SelectFieldProps) {
+  const [focused, setFocused] = useState(false);
+
+  return (
+    <div>
+      <label
+        htmlFor={id}
+        style={{
+          fontFamily: "var(--font-ibm-mono)",
+          color: focused ? "var(--accent-muted)" : "var(--text-muted)",
+          fontSize: "10px",
+          fontWeight: 700,
+          letterSpacing: "0.12em",
+          textTransform: "uppercase",
+          display: "block",
+          marginBottom: "6px",
+          transition: "color 0.15s ease",
+        }}
+      >
+        {label}
+      </label>
+      <select
+        id={id}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        onFocus={() => setFocused(true)}
+        onBlur={() => setFocused(false)}
+        style={{
+          background: "var(--bg-raised)",
+          border: "1px solid var(--border)",
+          borderLeft: focused ? "2px solid var(--accent)" : "2px solid var(--border)",
+          borderRadius: "2px",
+          color: value ? "var(--text-primary)" : "var(--text-muted)",
+          fontSize: "14px",
+          padding: "9px 12px",
+          width: "100%",
+          outline: "none",
+          transition: "border-left-color 0.15s ease",
+          fontFamily: "system-ui, sans-serif",
+        }}
+      >
+        {options.map((opt) => (
+          <option key={opt.value} value={opt.value}>
+            {opt.label}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
+}
+
 type SubmitStatus = "idle" | "submitting" | "submitted";
 
 export function TopicForm() {
@@ -219,47 +278,20 @@ export function TopicForm() {
             <Field label="Tittel" id="title" required value={form.title} onChange={update("title")} placeholder="Navn på emnet" />
             <Field label="Sammendrag" id="summary" required value={form.summary} onChange={update("summary")} placeholder="Kort beskrivelse av emnet" />
             <Field label="Veiledning" id="guidance" required multiline rows={5} value={form.guidance} onChange={update("guidance")} placeholder="Detaljert veiledning og prosedyre..." />
-            <div>
-              <label
-                htmlFor="area"
-                style={{
-                  fontFamily: "var(--font-ibm-mono)",
-                  color: "var(--text-muted)",
-                  fontSize: "10px",
-                  fontWeight: 700,
-                  letterSpacing: "0.12em",
-                  textTransform: "uppercase",
-                  display: "block",
-                  marginBottom: "6px",
-                }}
-              >
-                Område
-              </label>
-              <select
-                id="area"
-                value={form.area}
-                onChange={(e) => update("area")(e.target.value)}
-                style={{
-                  background: "var(--bg-raised)",
-                  border: "1px solid var(--border)",
-                  borderLeft: "2px solid var(--border)",
-                  borderRadius: "2px",
-                  color: form.area ? "var(--text-primary)" : "var(--text-muted)",
-                  fontSize: "14px",
-                  padding: "9px 12px",
-                  width: "100%",
-                  outline: "none",
-                  fontFamily: "system-ui, sans-serif",
-                }}
-              >
-                <option value="">Velg område...</option>
-                <option value="Hjerte">Hjerte</option>
-                <option value="Luftvei">Luftvei</option>
-                <option value="Traume">Traume</option>
-                <option value="Legemidler">Legemidler</option>
-                <option value="Annet">Annet</option>
-              </select>
-            </div>
+            <SelectField
+              label="Område"
+              id="area"
+              value={form.area}
+              onChange={update("area")}
+              options={[
+                { value: "", label: "Velg område..." },
+                { value: "Hjerte", label: "Hjerte" },
+                { value: "Luftvei", label: "Luftvei" },
+                { value: "Traume", label: "Traume" },
+                { value: "Legemidler", label: "Legemidler" },
+                { value: "Annet", label: "Annet" },
+              ]}
+            />
             <Field label="Eier" id="owner" value={form.owner} onChange={update("owner")} placeholder="Navn på ansvarlig person" />
 
             <div style={{ display: "flex", gap: "10px", paddingTop: "4px" }}>
