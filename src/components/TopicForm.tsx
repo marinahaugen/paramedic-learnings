@@ -202,7 +202,7 @@ export function TopicForm() {
         >
           {form.title}
         </div>
-        <a
+        <Link
           href="/topics"
           style={{
             fontFamily: "var(--font-ibm-mono)",
@@ -219,7 +219,7 @@ export function TopicForm() {
           }}
         >
           SE ALLE TOPICS →
-        </a>
+        </Link>
       </div>
     );
   }
