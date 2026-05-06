@@ -62,9 +62,9 @@ export default async function TopicsPage({
                   {heading}
                 </h1>
               </div>
-              <div style={{ display: "flex", gap: "10px" }}>
+              <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
                 <Link
-                  href="/sources/new"
+                  href="/sources/new/debrief"
                   style={{
                     fontFamily: "var(--font-ibm-mono)",
                     fontSize: "11px",
@@ -80,6 +80,24 @@ export default async function TopicsPage({
                   }}
                 >
                   + MELD DEBRIEF
+                </Link>
+                <Link
+                  href="/sources/new/research"
+                  style={{
+                    fontFamily: "var(--font-ibm-mono)",
+                    fontSize: "11px",
+                    fontWeight: 700,
+                    letterSpacing: "0.1em",
+                    textTransform: "uppercase",
+                    color: "var(--accent-muted)",
+                    background: "transparent",
+                    textDecoration: "none",
+                    padding: "10px 18px",
+                    borderRadius: "2px",
+                    border: "1px solid var(--border)",
+                  }}
+                >
+                  + REGISTRER FORSKNING
                 </Link>
                 <Link
                   href="/topics/new"

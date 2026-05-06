@@ -4,6 +4,43 @@ import Link from "next/link";
 import { useActionState, useState } from "react";
 import { createSource, type CreateSourceErrors } from "@/app/actions/sources";
 
+export type SourceFormType = "debrief" | "research";
+
+const COPY = {
+  debrief: {
+    breadcrumb: "KILDER / NY DEBRIEF",
+    heading: "MELD DEBRIEF",
+    submit: "SEND DEBRIEF",
+    sourceType: "Debrief" as const,
+    dateLabel: "Dato for hendelse",
+    contentLabel: "Innhold",
+    urlLabel: "Kilde-URL",
+    descriptionLabel: null,
+  },
+  research: {
+    breadcrumb: "KILDER / NY FORSKNING",
+    heading: "REGISTRER FORSKNING",
+    submit: "SEND FORSKNING",
+    sourceType: "Forskning" as const,
+    dateLabel: "Publiseringsdato",
+    contentLabel: "Sammendrag",
+    urlLabel: "URL / DOI",
+    descriptionLabel: "Forfattere / Utgiver",
+  },
+} satisfies Record<
+  SourceFormType,
+  {
+    breadcrumb: string;
+    heading: string;
+    submit: string;
+    sourceType: "Debrief" | "Forskning";
+    dateLabel: string;
+    contentLabel: string;
+    urlLabel: string;
+    descriptionLabel: string | null;
+  }
+>;
+
 interface FieldProps {
   label: string;
   id: string;
@@ -102,7 +139,8 @@ function Field({
   );
 }
 
-export function CreateSourceForm() {
+export function CreateSourceForm({ type }: { type: SourceFormType }) {
+  const copy = COPY[type];
   const [state, formAction, isPending] = useActionState(createSource, null);
   const errors: CreateSourceErrors = state?.errors ?? {};
 
@@ -125,7 +163,7 @@ export function CreateSourceForm() {
             marginBottom: "4px",
           }}
         >
-          KILDER / NY
+          {copy.breadcrumb}
         </div>
         <h1
           style={{
@@ -136,7 +174,7 @@ export function CreateSourceForm() {
             lineHeight: 1,
           }}
         >
-          MELD DEBRIEF
+          {copy.heading}
         </h1>
       </div>
 
@@ -155,6 +193,8 @@ export function CreateSourceForm() {
         </div>
 
         <form action={formAction} style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+          <input type="hidden" name="sourceType" value={copy.sourceType} />
+
           <Field
             label="Tittel"
             id="title"
@@ -162,14 +202,24 @@ export function CreateSourceForm() {
             required
             error={errors.title?.[0]}
           />
+
+          {copy.descriptionLabel && (
+            <Field
+              label={copy.descriptionLabel}
+              id="description"
+              name="description"
+              error={errors.description?.[0]}
+            />
+          )}
+
           <Field
-            label="Dato for hendelse"
+            label={copy.dateLabel}
             id="reportDate"
             name="reportDate"
             type="date"
           />
           <Field
-            label="Innhold"
+            label={copy.contentLabel}
             id="content"
             name="content"
             required
@@ -178,7 +228,7 @@ export function CreateSourceForm() {
             error={errors.content?.[0]}
           />
           <Field
-            label="Kilde-URL"
+            label={copy.urlLabel}
             id="url"
             name="url"
             type="url"
@@ -203,7 +253,7 @@ export function CreateSourceForm() {
                 transition: "background 0.15s ease, color 0.15s ease",
               }}
             >
-              {isPending ? "SENDER..." : "SEND DEBRIEF"}
+              {isPending ? "SENDER..." : copy.submit}
             </button>
             <Link
               href="/topics"

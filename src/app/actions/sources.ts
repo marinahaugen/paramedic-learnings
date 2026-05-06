@@ -6,7 +6,10 @@ import { z } from "zod";
 import { db } from "@/db";
 import { sources } from "@/db/schema";
 
+const sourceTypeEnum = z.enum(["Debrief", "Forskning"]);
+
 const createSourceSchema = z.object({
+  sourceType: sourceTypeEnum,
   title: z.string().min(1, "Tittel er påkrevd"),
   content: z.string().min(1, "Innhold er påkrevd"),
   reportDate: z.string().optional(),
@@ -15,6 +18,7 @@ const createSourceSchema = z.object({
     .url("Ugyldig URL")
     .optional()
     .or(z.literal("")),
+  description: z.string().optional(),
 });
 
 export type CreateSourceErrors = Partial<
@@ -26,10 +30,12 @@ export async function createSource(
   formData: FormData
 ): Promise<{ errors: CreateSourceErrors }> {
   const raw = {
+    sourceType: formData.get("sourceType") as string,
     title: formData.get("title") as string,
     content: formData.get("content") as string,
     reportDate: (formData.get("reportDate") as string) || undefined,
     url: (formData.get("url") as string) || undefined,
+    description: (formData.get("description") as string) || undefined,
   };
 
   const parsed = createSourceSchema.safeParse(raw);
@@ -42,7 +48,8 @@ export async function createSource(
     content: parsed.data.content,
     reportDate: parsed.data.reportDate ?? null,
     url: parsed.data.url || null,
-    sourceType: "Debrief",
+    description: parsed.data.description || null,
+    sourceType: parsed.data.sourceType,
     topicId: null,
   });
 
