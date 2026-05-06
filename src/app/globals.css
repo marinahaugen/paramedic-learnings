@@ -45,3 +45,19 @@ body {
   image-rendering: pixelated;
   image-rendering: crisp-edges;
 }
+
+/* Anatomical lub-dub heartbeat — ~70 BPM, S1 strong + S2 softer + diastolic rest */
+@keyframes pulse-lubdub {
+  0%   { transform: scale(1); }
+  14%  { transform: scale(1.14); }
+  28%  { transform: scale(1); }
+  42%  { transform: scale(1.07); }
+  56%  { transform: scale(1); }
+  100% { transform: scale(1); }
+}
+
+.heart-beat {
+  animation: pulse-lubdub 857ms cubic-bezier(0.5, 0, 0.5, 1) infinite;
+  transform-origin: 50% 60%;
+  transform-box: fill-box;
+}

@@ -68,7 +68,7 @@ const SHADOW = "#5a4a36";
 
 const SPRITES: Record<SpriteKind, React.ReactElement> = {
   heart: (
-    <g>
+    <g className="heart-beat">
       <rect x="2" y="2" width="2" height="2" fill={ROSE} />
       <rect x="8" y="2" width="2" height="2" fill={ROSE} />
       <rect x="1" y="3" width="10" height="3" fill={ROSE} />
@@ -122,7 +122,7 @@ const SPRITES: Record<SpriteKind, React.ReactElement> = {
     </g>
   ),
   crest: (
-    <g>
+    <g className="heart-beat">
       <rect x="2" y="2" width="2" height="2" fill={ROSE} />
       <rect x="8" y="2" width="2" height="2" fill={ROSE} />
       <rect x="1" y="3" width="10" height="3" fill={ROSE} />

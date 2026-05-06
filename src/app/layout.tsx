@@ -133,16 +133,18 @@ function PixelHeart() {
       className="pixelated"
       aria-hidden
     >
-      <rect x="3" y="3" width="3" height="3" fill="#b87474" />
-      <rect x="10" y="3" width="3" height="3" fill="#b87474" />
-      <rect x="2" y="4" width="12" height="4" fill="#b87474" />
-      <rect x="3" y="8" width="10" height="2" fill="#a04848" />
-      <rect x="4" y="10" width="8" height="1" fill="#a04848" />
-      <rect x="5" y="11" width="6" height="1" fill="#a04848" />
-      <rect x="6" y="12" width="4" height="1" fill="#a04848" />
-      <rect x="7" y="13" width="2" height="1" fill="#a04848" />
-      <rect x="4" y="4" width="1" height="1" fill="#f5d4d4" />
-      <rect x="11" y="4" width="1" height="1" fill="#f5d4d4" />
+      <g className="heart-beat">
+        <rect x="3" y="3" width="3" height="3" fill="#b87474" />
+        <rect x="10" y="3" width="3" height="3" fill="#b87474" />
+        <rect x="2" y="4" width="12" height="4" fill="#b87474" />
+        <rect x="3" y="8" width="10" height="2" fill="#a04848" />
+        <rect x="4" y="10" width="8" height="1" fill="#a04848" />
+        <rect x="5" y="11" width="6" height="1" fill="#a04848" />
+        <rect x="6" y="12" width="4" height="1" fill="#a04848" />
+        <rect x="7" y="13" width="2" height="1" fill="#a04848" />
+        <rect x="4" y="4" width="1" height="1" fill="#f5d4d4" />
+        <rect x="11" y="4" width="1" height="1" fill="#f5d4d4" />
+      </g>
     </svg>
   );
 }
