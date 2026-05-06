@@ -23,6 +23,11 @@ npm run build
 # Generate and apply DB migrations (after schema changes)
 npx drizzle-kit generate
 npx drizzle-kit migrate
+
+# Seed the database with the workshop's example topics and sources
+# Run once after first setup. The script is additive (no truncate),
+# so re-running will create duplicates.
+npm run db:seed
 ```
 
 No test runner is configured yet.
