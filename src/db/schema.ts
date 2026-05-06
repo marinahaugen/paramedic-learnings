@@ -1,4 +1,4 @@
-import { integer, pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
+import { date, integer, pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
 
 export const topics = pgTable("topics", {
   id: serial("id").primaryKey(),
@@ -16,9 +16,11 @@ export const topics = pgTable("topics", {
 export const sources = pgTable("sources", {
   id: serial("id").primaryKey(),
   topicId: integer("topic_id")
-    .notNull()
     .references(() => topics.id, { onDelete: "cascade" }),
   title: text("title").notNull(),
+  sourceType: text("source_type").default("Debrief").notNull(),
+  content: text("content").notNull(),
+  reportDate: date("report_date"),
   url: text("url"),
   description: text("description"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
