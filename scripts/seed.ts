@@ -356,34 +356,34 @@ Tips:
   },
 ];
 
-const seedSources: { topicTitle: string; sources: Array<{ title: string; url?: string; description?: string }> }[] = [
+const seedSources: { topicTitle: string; sources: Array<{ title: string; content: string; url?: string; description?: string }> }[] = [
   {
     topicTitle: "Hypotermi – aktiv oppvarming",
     sources: [
-      { title: "Brown et al. – Accidental Hypothermia (NEJM 2012)", url: "https://doi.org/10.1056/NEJMra1114208", description: "Oversikt over håndtering av aksidentell hypotermi, inkludert ECMO-indikasjon." },
-      { title: "Scandinavian guidelines for hypothermia 2020", url: "https://doi.org/10.1186/s13049-020-0764-3", description: "Nordiske retningslinjer for prehospital og hospitalt behandling." },
-      { title: "ECMO-protokoll OUS 2023", description: "Intern protokoll for ekstra-korporeal oppvarming ved dypt hypotermi, Oslo universitetssykehus." },
+      { title: "Brown et al. – Accidental Hypothermia (NEJM 2012)", content: "Oversikt over håndtering av aksidentell hypotermi, inkludert ECMO-indikasjon.", url: "https://doi.org/10.1056/NEJMra1114208", description: "Oversikt over håndtering av aksidentell hypotermi, inkludert ECMO-indikasjon." },
+      { title: "Scandinavian guidelines for hypothermia 2020", content: "Nordiske retningslinjer for prehospital og hospitalt behandling.", url: "https://doi.org/10.1186/s13049-020-0764-3", description: "Nordiske retningslinjer for prehospital og hospitalt behandling." },
+      { title: "ECMO-protokoll OUS 2023", content: "Intern protokoll for ekstra-korporeal oppvarming ved dypt hypotermi, Oslo universitetssykehus.", description: "Intern protokoll for ekstra-korporeal oppvarming ved dypt hypotermi, Oslo universitetssykehus." },
     ],
   },
   {
     topicTitle: "STEMI – prehospital aktivering og behandling",
     sources: [
-      { title: "ESC Guidelines for STEMI 2023", url: "https://doi.org/10.1093/eurheartj/ehad191", description: "Europeiske retningslinjer for håndtering av ST-elevasjonsinfarkt." },
-      { title: "AVOID-studien – Air vs Oxygen in STEMI", url: "https://doi.org/10.1161/CIRCULATIONAHA.114.014494", description: "Rutineoksygen økte infarktområdet sammenlignet med romluft." },
+      { title: "ESC Guidelines for STEMI 2023", content: "Europeiske retningslinjer for håndtering av ST-elevasjonsinfarkt.", url: "https://doi.org/10.1093/eurheartj/ehad191", description: "Europeiske retningslinjer for håndtering av ST-elevasjonsinfarkt." },
+      { title: "AVOID-studien – Air vs Oxygen in STEMI", content: "Rutineoksygen økte infarktområdet sammenlignet med romluft.", url: "https://doi.org/10.1161/CIRCULATIONAHA.114.014494", description: "Rutineoksygen økte infarktområdet sammenlignet med romluft." },
     ],
   },
   {
     topicTitle: "Sepsis – tidlig gjenkjenning og behandling",
     sources: [
-      { title: "Surviving Sepsis Campaign 2021", url: "https://doi.org/10.1097/CCM.0000000000005337", description: "Internasjonale retningslinjer for sepsis og septisk sjokk." },
-      { title: "Seymour et al. – Time to Treatment and Mortality in Sepsis (NEJM 2017)", url: "https://doi.org/10.1056/NEJMoa1603058", description: "Klar dose-respons mellom tid til antibiotika og mortalitet." },
+      { title: "Surviving Sepsis Campaign 2021", content: "Internasjonale retningslinjer for sepsis og septisk sjokk.", url: "https://doi.org/10.1097/CCM.0000000000005337", description: "Internasjonale retningslinjer for sepsis og septisk sjokk." },
+      { title: "Seymour et al. – Time to Treatment and Mortality in Sepsis (NEJM 2017)", content: "Klar dose-respons mellom tid til antibiotika og mortalitet.", url: "https://doi.org/10.1056/NEJMoa1603058", description: "Klar dose-respons mellom tid til antibiotika og mortalitet." },
     ],
   },
   {
     topicTitle: "Alvorlig allergisk reaksjon og anafylaksi",
     sources: [
-      { title: "Simons et al. – IM vs SC adrenalin absorption", url: "https://doi.org/10.1016/S0091-6749(98)70326-3", description: "IM i lårmuskelen gir raskere og høyere plasmakonsentrasjon enn subkutan injeksjon." },
-      { title: "WAO Guidelines for Anaphylaxis 2020", url: "https://doi.org/10.1186/s40413-020-00287-1", description: "Internasjonale retningslinjer fra World Allergy Organization." },
+      { title: "Simons et al. – IM vs SC adrenalin absorption", content: "IM i lårmuskelen gir raskere og høyere plasmakonsentrasjon enn subkutan injeksjon.", url: "https://doi.org/10.1016/S0091-6749(98)70326-3", description: "IM i lårmuskelen gir raskere og høyere plasmakonsentrasjon enn subkutan injeksjon." },
+      { title: "WAO Guidelines for Anaphylaxis 2020", content: "Internasjonale retningslinjer fra World Allergy Organization.", url: "https://doi.org/10.1186/s40413-020-00287-1", description: "Internasjonale retningslinjer fra World Allergy Organization." },
     ],
   },
 ];
