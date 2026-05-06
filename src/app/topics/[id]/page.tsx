@@ -134,35 +134,53 @@ export default async function TopicPage({
                   padding: "14px 16px",
                 }}
               >
-                {source.url ? (
-                  <a
-                    href={source.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{
-                      fontFamily: "var(--font-ibm-mono)",
-                      fontSize: "11px",
-                      fontWeight: 700,
-                      letterSpacing: "0.08em",
-                      color: "var(--accent-deep)",
-                      textDecoration: "none",
-                    }}
-                  >
-                    {source.title} →
-                  </a>
-                ) : (
+                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                   <span
                     style={{
+                      background: "var(--bg-raised)",
+                      color: "var(--accent-deep)",
+                      border: "1px solid var(--border)",
                       fontFamily: "var(--font-ibm-mono)",
-                      fontSize: "11px",
+                      fontSize: "9px",
                       fontWeight: 700,
-                      letterSpacing: "0.08em",
-                      color: "var(--text-secondary)",
+                      letterSpacing: "0.12em",
+                      textTransform: "uppercase" as const,
+                      padding: "2px 7px",
+                      whiteSpace: "nowrap" as const,
                     }}
                   >
-                    {source.title}
+                    {source.sourceType}
                   </span>
-                )}
+                  {source.url ? (
+                    <a
+                      href={source.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        fontFamily: "var(--font-ibm-mono)",
+                        fontSize: "11px",
+                        fontWeight: 700,
+                        letterSpacing: "0.08em",
+                        color: "var(--accent-deep)",
+                        textDecoration: "none",
+                      }}
+                    >
+                      {source.title} →
+                    </a>
+                  ) : (
+                    <span
+                      style={{
+                        fontFamily: "var(--font-ibm-mono)",
+                        fontSize: "11px",
+                        fontWeight: 700,
+                        letterSpacing: "0.08em",
+                        color: "var(--text-secondary)",
+                      }}
+                    >
+                      {source.title}
+                    </span>
+                  )}
+                </div>
                 {source.description && (
                   <p
                     style={{
