@@ -15,6 +15,13 @@
       "when": 1777980031278,
       "tag": "0001_eager_iron_man",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1778059581469,
+      "tag": "0002_mighty_norman_osborn",
+      "breakpoints": true
     }
   ]
 }

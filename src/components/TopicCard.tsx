@@ -8,6 +8,7 @@ export interface TopicCardProps {
   title?: string;
   summary?: string;
   owner?: string;
+  topicType?: string;
   version?: number;
   isDraft?: boolean;
   updatedAt?: Date | string;
@@ -18,6 +19,7 @@ export function TopicCard({
   title,
   summary,
   owner,
+  topicType = "Prosedyre",
   version = 1,
   isDraft = false,
   updatedAt,
@@ -59,7 +61,7 @@ export function TopicCard({
               padding: "2px 8px",
             }}
           >
-            PROSEDYRE
+            {topicType.toUpperCase()}
           </span>
           <span
             style={{

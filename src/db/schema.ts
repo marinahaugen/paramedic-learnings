@@ -5,6 +5,7 @@ export const topics = pgTable("topics", {
   title: text("title").notNull(),
   summary: text("summary").notNull(),
   guidance: text("guidance").notNull(),
+  topicType: text("topic_type").default("Prosedyre").notNull(),
   area: text("area"),
   rationale: text("rationale"),
   owner: text("owner"),

@@ -108,6 +108,7 @@ export default async function TopicsPage({
               title={topic.title}
               summary={topic.summary}
               owner={topic.owner ?? undefined}
+              topicType={topic.topicType}
               updatedAt={topic.updatedAt}
             />
           ))}

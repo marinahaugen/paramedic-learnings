@@ -1,0 +1,1 @@
+ALTER TABLE "topics" ADD COLUMN "topic_type" text DEFAULT 'Prosedyre' NOT NULL;
