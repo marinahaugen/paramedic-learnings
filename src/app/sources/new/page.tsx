@@ -1,5 +1,5 @@
-import { CreateSourceForm } from "./create-source-form";
+import { redirect } from "next/navigation";
 
-export default function NewSourcePage() {
-  return <CreateSourceForm />;
+export default function NewSourceIndex() {
+  redirect("/sources/new/debrief");
 }
