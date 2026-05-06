@@ -10,6 +10,7 @@ export interface TopicCardProps {
   owner?: string;
   version?: number;
   isDraft?: boolean;
+  updatedAt?: Date | string;
 }
 
 export function TopicCard({
@@ -19,15 +20,16 @@ export function TopicCard({
   owner,
   version = 1,
   isDraft = false,
+  updatedAt,
 }: TopicCardProps) {
   const today = useMemo(
     () =>
-      new Date().toLocaleDateString("nb-NO", {
+      (updatedAt ? new Date(updatedAt) : new Date()).toLocaleDateString("nb-NO", {
         day: "2-digit",
         month: "2-digit",
         year: "numeric",
       }),
-    [],
+    [updatedAt],
   );
 
   const card = (
