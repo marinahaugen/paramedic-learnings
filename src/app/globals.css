@@ -1,30 +1,47 @@
 @import "tailwindcss";
 
 :root {
-  --bg-base:    #0c0a09;
-  --bg-surface: #1c1917;
-  --bg-raised:  #292524;
-  --border:     #44403c;
-  --border-strong: #292524;
-  --accent:     #f59e0b;
-  --accent-muted: #fbbf24;
-  --text-primary:   #fafaf9;
-  --text-secondary: #a8a29e;
-  --text-muted:     #78716c;
-  --text-faint:     #57534e;
-  --bg-preview:     #161412;
+  /* Surfaces — cream paper system */
+  --bg-base:    #f5e8d8;
+  --bg-surface: #eedcc4;
+  --bg-raised:  #fff8e8;
+  --bg-preview: #f3e1c8;
+
+  /* Text — ink on cream */
+  --text-primary:   #2c2620;
+  --text-secondary: #5a4a36;
+  --text-muted:     #8a7657;
+  --text-faint:     #a8927a;
+
+  /* Borders & rules */
+  --border:        #2c2620;
+  --border-strong: #2c2620;
+  --rule:          #c8b48d;
+
+  /* Accent — dusty rose */
+  --accent:        #b87474;
+  --accent-muted:  #d68a8a;
+  --accent-deep:   #a04848;
+  --accent-shadow: #b87474;
 }
+
+html, body { background: var(--bg-base); }
 
 body {
-  background: var(--bg-base);
   color: var(--text-primary);
   font-family: system-ui, sans-serif;
+  background-image:
+    radial-gradient(circle at 22% 14%, rgba(91,74,54,0.08) 0 1px, transparent 2px),
+    radial-gradient(circle at 78% 64%, rgba(91,74,54,0.06) 0 1px, transparent 2px);
+  background-size: 13px 13px, 17px 17px;
 }
 
-::placeholder {
-  color: #44403c;
-}
+::placeholder { color: #b8a888; }
 
-* {
-  box-sizing: border-box;
+* { box-sizing: border-box; }
+
+/* Pixel-art helper — apply to SVG sprites for crisp rendering */
+.pixelated {
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
 }
