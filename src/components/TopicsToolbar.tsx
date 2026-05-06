@@ -31,61 +31,64 @@ export function TopicsToolbar({ areas }: TopicsToolbarProps) {
     [router, pathname, searchParams],
   );
 
-  const handleSearch = useCallback((value: string) => {
-    clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(() => updateParams({ q: value }), 300);
-  }, [updateParams]);
+  const handleSearch = useCallback(
+    (value: string) => {
+      clearTimeout(debounceRef.current);
+      debounceRef.current = setTimeout(() => updateParams({ q: value }), 300);
+    },
+    [updateParams],
+  );
 
   const handleArea = (value: string) => {
     updateParams({ area: activeArea === value ? "" : value });
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginBottom: "28px" }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginBottom: "20px" }}>
       <input
         type="text"
-        aria-label="Søk i topics"
+        aria-label="Søk i emner"
         defaultValue={q}
         onChange={(e) => handleSearch(e.target.value)}
-        placeholder="Søk i topics..."
+        placeholder="Søk i emner..."
         style={{
           background: "var(--bg-raised)",
-          border: "1px solid var(--border)",
-          borderLeft: "2px solid var(--border)",
-          borderRadius: "2px",
+          border: "2px solid var(--border)",
           color: "var(--text-primary)",
           fontSize: "14px",
+          fontFamily: "var(--font-pixel)",
           padding: "9px 12px",
           outline: "none",
-          fontFamily: "system-ui, sans-serif",
           width: "100%",
         }}
       />
       {areas.length > 0 && (
-        <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
-          {areas.map((a) => (
-            <button
-              key={a}
-              type="button"
-              aria-pressed={activeArea === a}
-              onClick={() => handleArea(a)}
-              style={{
-                background: activeArea === a ? "var(--accent)" : "var(--bg-raised)",
-                color: activeArea === a ? "var(--bg-base)" : "var(--text-muted)",
-                fontFamily: "var(--font-ibm-mono)",
-                fontSize: "10px",
-                fontWeight: 700,
-                letterSpacing: "0.1em",
-                textTransform: "uppercase",
-                padding: "5px 10px",
-                border: `1px solid ${activeArea === a ? "var(--accent)" : "var(--border)"}`,
-                borderRadius: "2px",
-                cursor: "pointer",
-              }}
-            >
-              {a}
-            </button>
-          ))}
+        <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
+          {areas.map((a) => {
+            const on = activeArea === a;
+            return (
+              <button
+                key={a}
+                type="button"
+                aria-pressed={on}
+                onClick={() => handleArea(a)}
+                style={{
+                  background: on ? "var(--accent-deep)" : "var(--bg-surface)",
+                  color: on ? "var(--bg-base)" : "var(--text-primary)",
+                  fontFamily: "var(--font-ibm-mono)",
+                  fontSize: "10px",
+                  fontWeight: 700,
+                  letterSpacing: "0.12em",
+                  textTransform: "uppercase",
+                  padding: "5px 10px",
+                  border: "1px solid var(--border)",
+                  cursor: "pointer",
+                }}
+              >
+                {a}
+              </button>
+            );
+          })}
         </div>
       )}
     </div>

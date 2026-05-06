@@ -1,0 +1,562 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pixel Art Redesign · Decision 03 — Approach (final)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Pixelify+Sans:wght@400;500;700&family=IBM+Plex+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0c0a09;
+      --surface: #1c1917;
+      --raised: #292524;
+      --border: #44403c;
+      --text: #fafaf9;
+      --muted: #a8a29e;
+      --faint: #57534e;
+      --accent: #f59e0b;
+
+      /* LOCKED palette tokens (will land in globals.css) */
+      --p-cream: #f5e8d8;
+      --p-cream-2: #eedcc4;
+      --p-ink: #2c2620;
+      --p-ink-2: #5a4a36;
+      --p-muted: #8a7657;
+      --p-rule: #c8b48d;
+      --p-rose: #b87474;
+      --p-rose-light: #d68a8a;
+      --p-rose-deep: #a04848;
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      background: var(--bg); color: var(--text);
+      font-family: 'IBM Plex Mono', monospace;
+      margin: 0; padding: 0; min-height: 100vh;
+    }
+    body {
+      background-image:
+        repeating-linear-gradient(0deg, transparent 0 47px, rgba(245,158,11,0.025) 47px 48px),
+        radial-gradient(ellipse at 20% 0%, rgba(245,158,11,0.06), transparent 60%);
+    }
+    header.page {
+      padding: 28px 48px 16px; border-bottom: 1px solid var(--border);
+      display: flex; justify-content: space-between; align-items: end;
+      flex-wrap: wrap; gap: 12px;
+    }
+    header.page .crumb { font-size: 11px; letter-spacing: 0.18em; color: var(--accent); text-transform: uppercase; }
+    header.page h1 { margin: 4px 0 0; font-family: 'Press Start 2P', monospace; font-size: 22px; color: var(--text); letter-spacing: 0.04em; }
+    header.page .meta { font-size: 11px; color: var(--faint); letter-spacing: 0.14em; text-transform: uppercase; }
+    .question { padding: 24px 48px 8px; font-size: 14px; color: var(--muted); letter-spacing: 0.04em; max-width: 1100px; line-height: 1.7; }
+    .question strong { color: var(--text); }
+    .past {
+      margin: 0 48px; padding: 10px 16px;
+      background: rgba(245,158,11,0.04); border-left: 3px solid var(--accent);
+      font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted);
+    }
+    .past .pick { color: var(--accent); margin-left: 6px; }
+    .past .file { color: var(--faint); margin-left: 6px; text-transform: none; letter-spacing: 0.04em; }
+    .past .file a { color: var(--faint); text-decoration: none; border-bottom: 1px dotted var(--faint); }
+    .past .file a:hover { color: var(--accent); }
+    .swatch-row { margin: 10px 48px 0; padding: 10px 16px; background: rgba(184,116,116,0.06); border-left: 3px solid var(--p-rose); font-size: 11px; letter-spacing: 0.10em; color: var(--muted); display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .swatch-row strong { color: var(--p-rose-light); letter-spacing: 0.06em; }
+    .swatch-row .chip { display: inline-block; width: 16px; height: 16px; border: 1px solid var(--border); }
+    .swatch-row code { color: var(--p-rose-light); font-size: 11px; }
+    .selected-bar {
+      margin: 12px 48px 0; padding: 12px 18px;
+      background: rgba(245,158,11,0.06); border: 1px dashed var(--accent);
+      color: var(--accent); font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+      display: none;
+    }
+    .selected-bar.active { display: block; }
+    .grid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 24px; padding: 24px 48px 64px;
+    }
+    @media (max-width: 1500px) { .grid { grid-template-columns: 1fr; } }
+    @media (max-width: 1100px) {
+      header.page { padding: 24px; }
+      .question { padding: 18px 24px 8px; }
+      .past, .swatch-row { margin: 0 24px; }
+      .swatch-row { margin-top: 10px; }
+      .selected-bar { margin: 12px 24px 0; }
+      .grid { padding: 24px 24px 64px; }
+    }
+    .option {
+      background: var(--surface); border: 1px solid var(--border);
+      cursor: pointer;
+      transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
+      overflow: hidden;
+      display: flex; flex-direction: column;
+    }
+    .option:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 14px 32px rgba(0,0,0,0.5); }
+    .option.selected { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(245,158,11,0.45), 0 14px 32px rgba(0,0,0,0.5); }
+    .option-head { display: flex; justify-content: space-between; align-items: baseline; padding: 14px 20px; border-bottom: 1px solid var(--border); }
+    .option-head .letter { font-family: 'Press Start 2P', monospace; font-size: 22px; color: var(--accent); }
+    .option-head .label { font-size: 10px; letter-spacing: 0.18em; color: var(--muted); text-transform: uppercase; }
+    .stage { padding: 24px 18px; min-height: 580px; display: flex; align-items: flex-start; justify-content: center; background: radial-gradient(ellipse at 30% 20%, rgba(245,235,216,0.04), transparent 60%), var(--surface); }
+    .foot { padding: 16px 20px 18px; border-top: 1px solid var(--border); background: var(--bg); }
+    .foot h3 { margin: 0 0 6px; font-family: 'Press Start 2P', monospace; font-size: 12px; color: var(--text); letter-spacing: 0.04em; }
+    .foot .views { font-size: 10px; color: var(--accent); letter-spacing: 0.18em; text-transform: uppercase; margin-bottom: 8px; }
+    .foot p { margin: 0 0 8px; font-size: 12px; line-height: 1.55; color: var(--muted); }
+    .foot .pros { font-size: 11px; color: #9bbf83; margin: 0 0 4px; }
+    .foot .cons { font-size: 11px; color: #c89878; margin: 0; }
+    .px { image-rendering: pixelated; image-rendering: crisp-edges; }
+
+    /* ============================================================
+       Shared mockup base — full "page" feel for each approach
+       ============================================================ */
+    .page-mock {
+      width: 100%; max-width: 360px;
+      background: var(--p-cream);
+      color: var(--p-ink);
+      font-family: 'Pixelify Sans', sans-serif;
+      border: 2px solid var(--p-ink);
+      box-shadow: 5px 5px 0 var(--p-rose);
+      position: relative;
+      overflow: hidden;
+    }
+    .page-mock::before {
+      content: ''; position: absolute; inset: 0;
+      background-image:
+        radial-gradient(circle at 22% 14%, rgba(91,74,54,0.10) 0 1px, transparent 2px),
+        radial-gradient(circle at 78% 64%, rgba(91,74,54,0.07) 0 1px, transparent 2px);
+      background-size: 13px 13px, 17px 17px;
+      pointer-events: none;
+    }
+    .page-mock .topbar {
+      padding: 10px 14px;
+      border-bottom: 2px solid var(--p-ink);
+      display: flex; justify-content: space-between; align-items: center;
+      background: var(--p-cream-2);
+      position: relative; z-index: 1;
+    }
+    .page-mock .brand { font-family: 'Press Start 2P', monospace; font-size: 9px; color: var(--p-ink); letter-spacing: 0.04em; }
+    .page-mock .nav { font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: var(--p-muted); letter-spacing: 0.10em; text-transform: uppercase; display: flex; gap: 10px; }
+    .page-mock .nav .active { color: var(--p-rose-deep); font-weight: 700; }
+
+    /* ===== APPROACH A: Notebook Journal ===== */
+    .a-body { padding: 18px 20px; position: relative; z-index: 1; }
+    .a-pageheader { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+    .a-pageheader h2 { margin: 0; font-size: 22px; font-weight: 700; color: var(--p-ink); }
+    .a-pageheader .pen { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--p-muted); letter-spacing: 0.12em; text-transform: uppercase; }
+    .a-entry {
+      padding: 14px 0 14px 14px;
+      border-left: 3px solid var(--p-rose);
+      margin-bottom: 14px;
+      position: relative;
+    }
+    .a-entry .tape {
+      position: absolute; top: -4px; left: 6px;
+      width: 32px; height: 10px;
+      background: rgba(214,138,138,0.55);
+      border: 1px solid var(--p-rose);
+      transform: rotate(-3deg);
+    }
+    .a-entry .date {
+      font-family: 'IBM Plex Mono', monospace; font-size: 9px;
+      color: var(--p-muted); letter-spacing: 0.10em; text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .a-entry h3 {
+      margin: 0 0 4px; font-size: 17px; font-weight: 700;
+      color: var(--p-ink); line-height: 1.1;
+    }
+    .a-entry p {
+      margin: 0 0 6px; font-size: 11px;
+      color: var(--p-ink-2); line-height: 1.45;
+      font-family: 'IBM Plex Mono', monospace;
+    }
+    .a-entry .meta { font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: var(--p-muted); letter-spacing: 0.06em; }
+    .a-entry .meta .v { color: var(--p-rose-deep); font-weight: 700; }
+
+    /* ===== APPROACH B: Field Guide ===== */
+    .b-body { display: flex; position: relative; z-index: 1; min-height: 360px; }
+    .b-side {
+      width: 100px; padding: 14px 12px;
+      background: var(--p-cream-2);
+      border-right: 2px solid var(--p-ink);
+    }
+    .b-side .h { font-family: 'IBM Plex Mono', monospace; font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--p-muted); margin-bottom: 8px; }
+    .b-side ul { list-style: none; margin: 0; padding: 0; }
+    .b-side li { font-size: 12px; color: var(--p-ink); margin-bottom: 7px; padding-left: 10px; position: relative; }
+    .b-side li::before { content: ''; position: absolute; left: 0; top: 7px; width: 4px; height: 4px; background: var(--p-rose); }
+    .b-side li.active { color: var(--p-rose-deep); font-weight: 700; }
+    .b-side li.active::before { background: var(--p-rose-deep); width: 6px; height: 6px; top: 6px; }
+
+    .b-main { flex: 1; padding: 14px; }
+    .b-main h2 { margin: 0 0 10px; font-size: 18px; color: var(--p-ink); font-weight: 700; }
+    .b-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .b-card {
+      padding: 8px; border: 1px solid var(--p-ink);
+      background: var(--p-cream); position: relative;
+    }
+    .b-card .sprite { width: 22px; height: 22px; }
+    .b-card h4 {
+      margin: 4px 0 2px; font-size: 12px; font-weight: 700;
+      color: var(--p-ink); line-height: 1.05;
+    }
+    .b-card .tag {
+      font-family: 'IBM Plex Mono', monospace; font-size: 7px; color: var(--p-rose-deep);
+      letter-spacing: 0.10em; text-transform: uppercase;
+    }
+    .b-card.featured { border-color: var(--p-rose); border-width: 2px; box-shadow: 2px 2px 0 var(--p-rose-light); }
+
+    /* ===== APPROACH C: Botanical Index ===== */
+    .c-body { padding: 14px 18px; position: relative; z-index: 1; }
+    .c-tabs { display: flex; gap: 0; margin-bottom: 12px; border-bottom: 2px solid var(--p-ink); }
+    .c-tab {
+      font-family: 'IBM Plex Mono', monospace; font-size: 10px;
+      padding: 6px 10px; letter-spacing: 0.10em; text-transform: uppercase;
+      color: var(--p-muted); border-bottom: none;
+      border-top: 1px solid var(--p-rule);
+      border-left: 1px solid var(--p-rule);
+      border-right: 1px solid var(--p-rule);
+      margin-right: -1px;
+      margin-bottom: -2px;
+      background: var(--p-cream-2);
+      position: relative;
+    }
+    .c-tab.active {
+      color: var(--p-ink);
+      background: var(--p-cream);
+      border-color: var(--p-ink);
+      border-bottom: 2px solid var(--p-cream);
+      font-weight: 700;
+    }
+    .c-row {
+      display: grid;
+      grid-template-columns: 28px 1fr 56px;
+      gap: 8px; align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px dotted var(--p-rule);
+    }
+    .c-row .icon { width: 22px; height: 22px; }
+    .c-row .title-cell { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+    .c-row h4 { margin: 0; font-size: 13px; font-weight: 700; color: var(--p-ink); line-height: 1.1; }
+    .c-row p { margin: 0; font-size: 10px; color: var(--p-ink-2); line-height: 1.3; font-family: 'IBM Plex Mono', monospace; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .c-row .right { font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: var(--p-rose-deep); letter-spacing: 0.04em; text-align: right; }
+    .c-row .right .v { font-weight: 700; }
+
+    /* progress dots */
+    .progress { padding: 0 48px 24px; display: flex; gap: 6px; align-items: center; }
+    .progress .dot { width: 8px; height: 8px; background: var(--border); }
+    .progress .dot.done { background: var(--accent); opacity: 0.5; }
+    .progress .dot.active { background: var(--accent); }
+    .progress .label { margin-left: 12px; font-size: 10px; letter-spacing: 0.18em; color: var(--faint); text-transform: uppercase; }
+    @media (max-width: 1100px) { .progress { padding: 0 24px 24px; } }
+  </style>
+</head>
+<body>
+  <header class="page">
+    <div>
+      <div class="crumb">PARAMEDIC LEARNINGS · DESIGN BRIEF</div>
+      <h1>DECISION 03 &nbsp;—&nbsp; APPROACH</h1>
+    </div>
+    <div class="meta">03 OPTIONS · FINAL DECISION · CLICK TO PICK</div>
+  </header>
+
+  <div class="progress">
+    <div class="dot done"></div>
+    <div class="dot done"></div>
+    <div class="dot active"></div>
+    <span class="label">03 / 03 — APPROACH (FINAL)</span>
+  </div>
+
+  <div class="past">
+    LOCKED:
+    <span>D01 · Era →</span>
+    <span class="pick">Modern indie pixel</span>
+    <span class="file">(<a href="01-era.html" target="_blank">view</a>)</span>
+    &nbsp;&nbsp;&nbsp;
+    <span>D02 · Accent →</span>
+    <span class="pick">Cream + Dusty Rose</span>
+    <span class="file">(<a href="02-accent.html" target="_blank">view</a>)</span>
+  </div>
+
+  <div class="swatch-row">
+    <strong>PALETTE LOCKED:</strong>
+    <span class="chip" style="background:#f5e8d8" title="cream"></span><code>#f5e8d8</code>
+    <span class="chip" style="background:#2c2620" title="ink"></span><code>#2c2620</code>
+    <span class="chip" style="background:#b87474" title="rose"></span><code>#b87474</code>
+    <span class="chip" style="background:#d68a8a" title="rose light"></span><code>#d68a8a</code>
+    <span class="chip" style="background:#a04848" title="rose deep"></span><code>#a04848</code>
+    <span class="chip" style="background:#8a7657" title="muted text"></span><code>#8a7657</code>
+  </div>
+
+  <p class="question">
+    Three different layout philosophies, all in the locked palette. Each card below shows a <strong>topic-list page mockup</strong> in that approach (since list density varies most between layouts). Beneath each is a description of how the homepage and topic-form would feel in the same approach. <strong>Pick one and I'll write the spec, then build it.</strong>
+  </p>
+
+  <div id="selected" class="selected-bar">SELECTED → <span id="selectedName"></span> &nbsp;·&nbsp; tell Claude in the terminal to lock it in.</div>
+
+  <div class="grid">
+
+    <!-- ============== APPROACH A: NOTEBOOK JOURNAL ============== -->
+    <article class="option" data-option="A" data-name="Notebook Journal" onclick="select(this)">
+      <div class="option-head">
+        <span class="letter">A</span>
+        <span class="label">NOTEBOOK JOURNAL · LOW DENSITY</span>
+      </div>
+      <div class="stage">
+        <div class="page-mock px">
+          <div class="topbar">
+            <span class="brand">PARAMEDIC LEARNINGS</span>
+            <div class="nav"><span class="active">JOURNAL</span><span>+ NY</span></div>
+          </div>
+          <div class="a-body">
+            <div class="a-pageheader">
+              <h2>Mine emner</h2>
+              <span class="pen">12 OPPSLAG</span>
+            </div>
+
+            <div class="a-entry">
+              <span class="tape"></span>
+              <div class="date">12 MAI 2026 · v3</div>
+              <h3>Hjertestans</h3>
+              <p>Brystkomp. 30:2 · defib hvert 2. min · adrenalin 1mg iv</p>
+              <span class="meta">EIER: AS &nbsp;·&nbsp; <span class="v">PUBLISERT</span></span>
+            </div>
+
+            <div class="a-entry">
+              <span class="tape" style="background: rgba(184,116,116,0.45);"></span>
+              <div class="date">04 MAI 2026 · v1</div>
+              <h3>Anafylaksi</h3>
+              <p>Adrenalin im 0.5mg · sett iv-tilgang · vurder anti-histamin</p>
+              <span class="meta">EIER: MK &nbsp;·&nbsp; <span class="v">UTKAST</span></span>
+            </div>
+
+            <div class="a-entry">
+              <span class="tape"></span>
+              <div class="date">28 APR 2026 · v2</div>
+              <h3>Slag (FAST)</h3>
+              <p>Face arms speech time · transport rett til slagsenter</p>
+              <span class="meta">EIER: EH &nbsp;·&nbsp; <span class="v">PUBLISERT</span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="foot">
+        <h3>Notebook Journal</h3>
+        <div class="views">List · Home · Form</div>
+        <p><strong>List page:</strong> single column, each topic is a "page entry" with a washi-tape decoration, date, and dashed rose left rule. Generous whitespace.</p>
+        <p><strong>Homepage:</strong> a quiet open-book illustration above a 3-up "recent oppslag" block + a pixel illustration of a leather-bound journal. Pure invitation.</p>
+        <p><strong>Topic form:</strong> notebook-paper background with ruled lines, fields styled as journal blanks, live preview rendered as the next "page entry."</p>
+        <p class="pros">PROS · Cozy, low cognitive load, beautiful idle state. Maps well to a "gradually growing knowledge collection."</p>
+        <p class="cons">CONS · Slow to scan when you have 100+ topics. No category structure. Feels personal — maybe too personal for a shared org tool.</p>
+      </div>
+    </article>
+
+    <!-- ============== APPROACH B: FIELD GUIDE ============== -->
+    <article class="option" data-option="B" data-name="Field Guide" onclick="select(this)">
+      <div class="option-head">
+        <span class="letter">B</span>
+        <span class="label">FIELD GUIDE · MID DENSITY</span>
+      </div>
+      <div class="stage">
+        <div class="page-mock px">
+          <div class="topbar">
+            <span class="brand">PARAMEDIC LEARNINGS</span>
+            <div class="nav"><span class="active">EMNER</span><span>+ NY</span></div>
+          </div>
+          <div class="b-body">
+            <aside class="b-side">
+              <div class="h">KAPITLER</div>
+              <ul>
+                <li class="active">HJERTE</li>
+                <li>LUNGE</li>
+                <li>TRAUMA</li>
+                <li>NEVRO</li>
+                <li>PEDIATRI</li>
+                <li>GIFT</li>
+              </ul>
+            </aside>
+            <main class="b-main">
+              <h2>Hjerte · 8 emner</h2>
+              <div class="b-grid">
+                <div class="b-card featured">
+                  <svg class="sprite px" viewBox="0 0 16 16" shape-rendering="crispEdges">
+                    <rect x="3" y="3" width="3" height="3" fill="#b87474"/>
+                    <rect x="10" y="3" width="3" height="3" fill="#b87474"/>
+                    <rect x="2" y="4" width="12" height="4" fill="#b87474"/>
+                    <rect x="3" y="8" width="10" height="2" fill="#a04848"/>
+                    <rect x="4" y="10" width="8" height="1" fill="#a04848"/>
+                    <rect x="5" y="11" width="6" height="1" fill="#a04848"/>
+                    <rect x="6" y="12" width="4" height="1" fill="#a04848"/>
+                    <rect x="7" y="13" width="2" height="1" fill="#a04848"/>
+                    <rect x="4" y="4" width="1" height="1" fill="#f5d4d4"/>
+                  </svg>
+                  <h4>Hjerte-<br>stans</h4>
+                  <span class="tag">v3 · pub</span>
+                </div>
+                <div class="b-card">
+                  <svg class="sprite px" viewBox="0 0 16 16" shape-rendering="crispEdges">
+                    <rect x="2" y="6" width="12" height="6" fill="#b87474"/>
+                    <rect x="4" y="4" width="8" height="2" fill="#a04848"/>
+                    <rect x="6" y="2" width="4" height="2" fill="#a04848"/>
+                    <rect x="6" y="8" width="4" height="1" fill="#f5e8d8"/>
+                    <rect x="7" y="9" width="2" height="2" fill="#f5e8d8"/>
+                  </svg>
+                  <h4>Atrie-<br>flimmer</h4>
+                  <span class="tag">v2 · pub</span>
+                </div>
+                <div class="b-card">
+                  <svg class="sprite px" viewBox="0 0 16 16" shape-rendering="crispEdges">
+                    <rect x="2" y="7" width="2" height="2" fill="#b87474"/>
+                    <rect x="4" y="5" width="2" height="6" fill="#b87474"/>
+                    <rect x="6" y="3" width="2" height="3" fill="#b87474"/>
+                    <rect x="6" y="9" width="2" height="2" fill="#b87474"/>
+                    <rect x="8" y="2" width="2" height="11" fill="#a04848"/>
+                    <rect x="10" y="6" width="2" height="3" fill="#b87474"/>
+                    <rect x="12" y="8" width="2" height="1" fill="#b87474"/>
+                  </svg>
+                  <h4>STEMI</h4>
+                  <span class="tag">v1 · utk</span>
+                </div>
+                <div class="b-card">
+                  <svg class="sprite px" viewBox="0 0 16 16" shape-rendering="crispEdges">
+                    <rect x="6" y="2" width="4" height="12" fill="#b87474"/>
+                    <rect x="2" y="6" width="12" height="4" fill="#b87474"/>
+                    <rect x="7" y="3" width="2" height="10" fill="#f5e8d8"/>
+                    <rect x="3" y="7" width="10" height="2" fill="#f5e8d8"/>
+                  </svg>
+                  <h4>Brady-<br>kardi</h4>
+                  <span class="tag">v2 · pub</span>
+                </div>
+              </div>
+            </main>
+          </div>
+        </div>
+      </div>
+      <div class="foot">
+        <h3>Field Guide</h3>
+        <div class="views">List · Home · Form</div>
+        <p><strong>List page:</strong> sidebar of categories (KAPITLER) on the left, grid of topic cards on the right. Each card: pixel sprite + title + version tag. Featured cards get rose border.</p>
+        <p><strong>Homepage:</strong> hero with table-of-contents tiles (Hjerte/Lunge/Trauma/...), each with a representative pixel illustration. Below: "siste oppdateringer" feed.</p>
+        <p><strong>Topic form:</strong> two-pane: chapter selector + form fields on left, live "Field Guide entry" preview card on right with the sprite the editor picked.</p>
+        <p class="pros">PROS · Scales to 100+ topics. Clear domain structure (matches how paramedics learn — by system: hjerte, lunge, trauma). Closest in DNA to current TopicForm split layout.</p>
+        <p class="cons">CONS · Sidebar adds chrome. More to build (chapter taxonomy, sprite library per topic).</p>
+      </div>
+    </article>
+
+    <!-- ============== APPROACH C: BOTANICAL INDEX ============== -->
+    <article class="option" data-option="C" data-name="Botanical Index" onclick="select(this)">
+      <div class="option-head">
+        <span class="letter">C</span>
+        <span class="label">BOTANICAL INDEX · HIGH DENSITY</span>
+      </div>
+      <div class="stage">
+        <div class="page-mock px">
+          <div class="topbar">
+            <span class="brand">PARAMEDIC LEARNINGS</span>
+            <div class="nav"><span class="active">INDEKS</span><span>+ NY</span></div>
+          </div>
+          <div class="c-body">
+            <div class="c-tabs">
+              <span class="c-tab">A–E</span>
+              <span class="c-tab active">F–L</span>
+              <span class="c-tab">M–R</span>
+              <span class="c-tab">S–Z</span>
+            </div>
+
+            <div class="c-row">
+              <svg class="icon px" viewBox="0 0 12 12" shape-rendering="crispEdges">
+                <rect x="2" y="2" width="3" height="3" fill="#b87474"/>
+                <rect x="7" y="2" width="3" height="3" fill="#b87474"/>
+                <rect x="1" y="3" width="10" height="3" fill="#b87474"/>
+                <rect x="2" y="6" width="8" height="2" fill="#a04848"/>
+                <rect x="3" y="8" width="6" height="1" fill="#a04848"/>
+                <rect x="4" y="9" width="4" height="1" fill="#a04848"/>
+                <rect x="5" y="10" width="2" height="1" fill="#a04848"/>
+              </svg>
+              <div class="title-cell">
+                <h4>Hjertestans</h4>
+                <p>Brystkomp. 30:2 · defib hvert 2. min</p>
+              </div>
+              <div class="right"><span class="v">v3</span><br>AS</div>
+            </div>
+
+            <div class="c-row">
+              <svg class="icon px" viewBox="0 0 12 12" shape-rendering="crispEdges">
+                <rect x="5" y="1" width="2" height="10" fill="#b87474"/>
+                <rect x="2" y="4" width="8" height="4" fill="#b87474"/>
+                <rect x="3" y="5" width="6" height="2" fill="#f5e8d8"/>
+              </svg>
+              <div class="title-cell">
+                <h4>Hyperventilasjon</h4>
+                <p>Beroligende kontakt · pose-pust ikke anbefalt</p>
+              </div>
+              <div class="right"><span class="v">v1</span><br>EH</div>
+            </div>
+
+            <div class="c-row">
+              <svg class="icon px" viewBox="0 0 12 12" shape-rendering="crispEdges">
+                <rect x="2" y="3" width="8" height="6" fill="#b87474"/>
+                <rect x="3" y="2" width="6" height="1" fill="#a04848"/>
+                <rect x="4" y="9" width="4" height="2" fill="#a04848"/>
+                <rect x="5" y="5" width="2" height="2" fill="#f5e8d8"/>
+              </svg>
+              <div class="title-cell">
+                <h4>Hypoglykemi</h4>
+                <p>Glukose iv 10g · vurder glucagon im</p>
+              </div>
+              <div class="right"><span class="v">v2</span><br>MK</div>
+            </div>
+
+            <div class="c-row">
+              <svg class="icon px" viewBox="0 0 12 12" shape-rendering="crispEdges">
+                <rect x="2" y="5" width="8" height="5" fill="#b87474"/>
+                <rect x="3" y="3" width="6" height="2" fill="#a04848"/>
+                <rect x="4" y="2" width="4" height="1" fill="#a04848"/>
+                <rect x="3" y="10" width="6" height="1" fill="#5a4a36"/>
+              </svg>
+              <div class="title-cell">
+                <h4>Krampe (voksen)</h4>
+                <p>Sidoposisjon · stesolid 10mg pr</p>
+              </div>
+              <div class="right"><span class="v">v3</span><br>AS</div>
+            </div>
+
+            <div class="c-row">
+              <svg class="icon px" viewBox="0 0 12 12" shape-rendering="crispEdges">
+                <rect x="3" y="3" width="6" height="6" fill="#b87474"/>
+                <rect x="4" y="4" width="4" height="4" fill="#a04848"/>
+                <rect x="5" y="5" width="2" height="2" fill="#f5e8d8"/>
+              </svg>
+              <div class="title-cell">
+                <h4>Lungeødem</h4>
+                <p>Sittende leie · CPAP · nitroglyserin sl</p>
+              </div>
+              <div class="right"><span class="v">v2</span><br>EH</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="foot">
+        <h3>Botanical Index</h3>
+        <div class="views">List · Home · Form</div>
+        <p><strong>List page:</strong> alphabet-tabbed dividers on top, list rows with tiny pixel icon + title + summary + meta. Dotted leader lines between rows. Reference-book density.</p>
+        <p><strong>Homepage:</strong> single hero ("Index of paramedic procedures") + recent updates as inline rows + a small pixel illustration of a botanical-style title plate.</p>
+        <p><strong>Topic form:</strong> compact left form, right preview rendered as <em>two adjacent index rows</em> showing the new topic in alphabetical context (with neighbors).</p>
+        <p class="pros">PROS · Highest information density. Rewards experts. The index/leader-lines aesthetic matches "reference book" intuition perfectly.</p>
+        <p class="cons">CONS · Less inviting at small N (looks empty when you only have 5 topics). Pixel sprites at 12×12 do less visual work.</p>
+      </div>
+    </article>
+
+  </div>
+
+  <script>
+    function select(el) {
+      document.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+      el.classList.add('selected');
+      const bar = document.getElementById('selected');
+      const name = el.getAttribute('data-name');
+      const letter = el.getAttribute('data-option');
+      document.getElementById('selectedName').textContent = letter + ' · ' + name;
+      bar.classList.add('active');
+      bar.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,516 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pixel Art Redesign · Decision 01 — Era</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Pixelify+Sans:wght@400;500;700&family=VT323&family=IBM+Plex+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0c0a09;
+      --surface: #1c1917;
+      --raised: #292524;
+      --border: #44403c;
+      --text: #fafaf9;
+      --muted: #a8a29e;
+      --faint: #57534e;
+      --accent: #f59e0b;
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'IBM Plex Mono', monospace;
+      margin: 0; padding: 0;
+      min-height: 100vh;
+    }
+    body {
+      background-image:
+        repeating-linear-gradient(0deg, transparent 0 47px, rgba(245,158,11,0.025) 47px 48px),
+        radial-gradient(ellipse at 20% 0%, rgba(245,158,11,0.06), transparent 60%);
+    }
+    header.page {
+      padding: 28px 48px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    header.page .crumb {
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      color: var(--accent);
+      text-transform: uppercase;
+    }
+    header.page h1 {
+      margin: 4px 0 0;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 22px;
+      color: var(--text);
+      letter-spacing: 0.04em;
+    }
+    header.page .meta {
+      font-size: 11px;
+      color: var(--faint);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+    .question {
+      padding: 24px 48px 8px;
+      font-size: 14px;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+      max-width: 920px;
+      line-height: 1.7;
+    }
+    .question strong { color: var(--text); }
+    .selected-bar {
+      margin: 12px 48px 0;
+      padding: 12px 18px;
+      background: rgba(245,158,11,0.06);
+      border: 1px dashed var(--accent);
+      color: var(--accent);
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      display: none;
+    }
+    .selected-bar.active { display: block; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 28px;
+      padding: 24px 48px 64px;
+    }
+    @media (max-width: 1100px) {
+      .grid { grid-template-columns: 1fr; padding: 24px 24px 64px; }
+      header.page { padding: 24px; }
+      .question { padding: 18px 24px 8px; }
+      .selected-bar { margin: 12px 24px 0; }
+    }
+    .option {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .option:hover {
+      border-color: var(--accent);
+      transform: translateY(-2px);
+      box-shadow: 0 14px 32px rgba(0,0,0,0.5);
+    }
+    .option.selected {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(245,158,11,0.45), 0 14px 32px rgba(0,0,0,0.5);
+    }
+    .option-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border);
+    }
+    .option-head .letter {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 22px;
+      color: var(--accent);
+    }
+    .option-head .label {
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+    .option-stage {
+      padding: 36px 24px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 320px;
+      background:
+        radial-gradient(ellipse at center, rgba(245,158,11,0.04), transparent 70%),
+        var(--surface);
+    }
+    .option-foot {
+      padding: 16px 20px 18px;
+      border-top: 1px solid var(--border);
+      background: var(--bg);
+    }
+    .option-foot h3 {
+      margin: 0 0 6px;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 12px;
+      color: var(--text);
+      letter-spacing: 0.04em;
+    }
+    .option-foot p {
+      margin: 0;
+      font-size: 12px;
+      line-height: 1.55;
+      color: var(--muted);
+    }
+    .option-foot p .risk {
+      color: var(--faint);
+      font-style: italic;
+    }
+    .px { image-rendering: pixelated; image-rendering: crisp-edges; }
+
+    /* --- A: NES --- */
+    .mock-nes {
+      width: 280px;
+      background: #0c0a09;
+      border: 4px solid #f59e0b;
+      padding: 14px;
+      font-family: 'Press Start 2P', monospace;
+      color: #f59e0b;
+      box-shadow: 6px 6px 0 #4a2f00;
+    }
+    .mock-nes .tag {
+      display: inline-block;
+      background: #f59e0b;
+      color: #0c0a09;
+      padding: 4px 6px;
+      font-size: 8px;
+      margin-bottom: 14px;
+      letter-spacing: 0;
+    }
+    .mock-nes h4 {
+      margin: 0 0 10px;
+      font-size: 13px;
+      line-height: 1.35;
+      color: #fff5d4;
+      letter-spacing: 0;
+    }
+    .mock-nes .sprite { width: 56px; height: 56px; margin: 6px 0 12px; }
+    .mock-nes .meta {
+      font-size: 7px;
+      color: #fff5d4;
+      letter-spacing: 0.05em;
+      border-top: 2px solid #f59e0b;
+      padding-top: 8px;
+      display: flex; justify-content: space-between;
+    }
+
+    /* --- B: SNES --- */
+    .mock-snes {
+      width: 280px;
+      background: linear-gradient(180deg, #1a1530 0%, #2a1f4e 100%);
+      border: 3px double #d4a04a;
+      padding: 16px;
+      font-family: 'VT323', monospace;
+      color: #f1d68b;
+      position: relative;
+      box-shadow: 0 0 0 2px #0c0a09, 0 0 22px rgba(212,160,74,0.18);
+    }
+    .mock-snes::before {
+      content: '';
+      position: absolute; inset: 4px;
+      border: 1px solid #6f4e9a;
+      pointer-events: none;
+    }
+    .mock-snes .tag {
+      display: inline-block;
+      background: #6f4e9a;
+      color: #f1d68b;
+      padding: 2px 10px;
+      font-size: 14px;
+      letter-spacing: 0.08em;
+      margin-bottom: 8px;
+      border: 1px solid #d4a04a;
+    }
+    .mock-snes h4 {
+      margin: 0 0 8px;
+      font-size: 32px;
+      font-weight: 400;
+      line-height: 1;
+      color: #f8e5b0;
+      text-shadow: 2px 2px 0 #4a2f00;
+      letter-spacing: 0.02em;
+    }
+    .mock-snes p {
+      margin: 0 0 12px;
+      font-size: 16px;
+      color: #cdb380;
+      line-height: 1.25;
+    }
+    .mock-snes .meta {
+      font-size: 12px;
+      color: #d4a04a;
+      letter-spacing: 0.1em;
+      border-top: 1px solid #6f4e9a;
+      padding-top: 6px;
+      display: flex; justify-content: space-between;
+    }
+
+    /* --- C: Modern indie --- */
+    .mock-indie {
+      width: 280px;
+      background: #f5ebd8;
+      color: #2c2620;
+      padding: 18px;
+      font-family: 'Pixelify Sans', sans-serif;
+      border: 2px solid #2c2620;
+      box-shadow: 5px 5px 0 #2c2620, 5px 5px 0 2px #d27474;
+      position: relative;
+    }
+    .mock-indie::before {
+      content: '';
+      position: absolute; inset: 0;
+      background-image: radial-gradient(circle at 20% 12%, rgba(255,255,255,0.4) 0 1px, transparent 2px);
+      background-size: 11px 11px;
+      pointer-events: none;
+      opacity: 0.5;
+    }
+    .mock-indie .tag {
+      display: inline-block;
+      background: #5b6f4a;
+      color: #f5ebd8;
+      padding: 3px 8px;
+      font-size: 12px;
+      letter-spacing: 0.04em;
+      margin-bottom: 10px;
+      font-family: 'Pixelify Sans', sans-serif;
+      font-weight: 700;
+    }
+    .mock-indie h4 {
+      margin: 0 0 8px;
+      font-size: 24px;
+      font-weight: 700;
+      line-height: 1.05;
+      color: #2c2620;
+    }
+    .mock-indie p {
+      margin: 0 0 10px;
+      font-size: 14px;
+      color: #5a4a36;
+      line-height: 1.4;
+    }
+    .mock-indie .sprite { width: 56px; height: 56px; margin: 4px 0 10px; }
+    .mock-indie .meta {
+      font-size: 12px;
+      color: #8a7657;
+      border-top: 1px dashed #c8b48d;
+      padding-top: 8px;
+      display: flex; justify-content: space-between;
+      font-weight: 500;
+    }
+
+    /* --- D: GameBoy DMG amber --- */
+    .mock-gb {
+      width: 280px;
+      background: #0c0a09;
+      padding: 12px;
+      border: 3px solid #4a2f00;
+      font-family: 'Press Start 2P', monospace;
+      color: #f59e0b;
+      position: relative;
+      box-shadow: 0 0 0 4px #0c0a09, 0 0 24px rgba(245,158,11,0.12);
+    }
+    .mock-gb::after {
+      content: '';
+      position: absolute; inset: 0;
+      background-image: repeating-linear-gradient(
+        0deg,
+        transparent 0 2px,
+        rgba(245,158,11,0.05) 2px 3px
+      );
+      pointer-events: none;
+    }
+    .mock-gb .frame {
+      border: 2px solid #b07000;
+      padding: 14px;
+      position: relative;
+      z-index: 1;
+    }
+    .mock-gb .tag {
+      display: inline-block;
+      background: #b07000;
+      color: #0c0a09;
+      padding: 3px 6px;
+      font-size: 8px;
+      margin-bottom: 12px;
+    }
+    .mock-gb h4 {
+      margin: 0 0 8px;
+      font-size: 12px;
+      line-height: 1.35;
+      color: #f59e0b;
+    }
+    .mock-gb .sprite { width: 44px; height: 44px; margin: 4px 0 10px; }
+    .mock-gb .meta {
+      font-size: 7px;
+      color: #b07000;
+      border-top: 2px solid #4a2f00;
+      padding-top: 8px;
+      display: flex; justify-content: space-between;
+    }
+
+    /* progress dots */
+    .progress {
+      padding: 0 48px 24px;
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+    .progress .dot {
+      width: 8px; height: 8px; background: var(--border);
+      box-shadow: inset 0 0 0 1px var(--bg);
+    }
+    .progress .dot.active { background: var(--accent); }
+    .progress .label { margin-left: 12px; font-size: 10px; letter-spacing: 0.18em; color: var(--faint); text-transform: uppercase; }
+  </style>
+</head>
+<body>
+  <header class="page">
+    <div>
+      <div class="crumb">PARAMEDIC LEARNINGS · DESIGN BRIEF</div>
+      <h1>DECISION 01 &nbsp;—&nbsp; ERA</h1>
+    </div>
+    <div class="meta">04 OPTIONS · CLICK TO MARK YOUR PICK</div>
+  </header>
+
+  <div class="progress">
+    <div class="dot active"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+    <span class="label">01 / 05 — ERA</span>
+  </div>
+
+  <p class="question">
+    Pick the pixel-art reference closest to the vibe you want. <strong>Era anchors everything downstream</strong>
+    — palette, fonts, density, animation budget. Each card below shows a TopicCard mock with the
+    same content ("Hjertestans") rendered in the candidate style. Hover to lift; click to mark your pick.
+  </p>
+
+  <div id="selected" class="selected-bar">SELECTED → <span id="selectedName"></span> &nbsp;·&nbsp; tell Claude in the terminal to lock it in.</div>
+
+  <div class="grid">
+
+    <article class="option" data-option="A" data-name="NES / 8-bit" onclick="select(this)">
+      <div class="option-head">
+        <span class="letter">A</span>
+        <span class="label">NES · 8-BIT</span>
+      </div>
+      <div class="option-stage">
+        <div class="mock-nes px">
+          <span class="tag">PROTOKOLL</span>
+          <h4>HJERTE-<br>STANS</h4>
+          <svg class="sprite" viewBox="0 0 8 8" shape-rendering="crispEdges">
+            <rect x="1" y="1" width="2" height="2" fill="#f59e0b"/>
+            <rect x="5" y="1" width="2" height="2" fill="#f59e0b"/>
+            <rect x="0" y="2" width="8" height="2" fill="#f59e0b"/>
+            <rect x="1" y="4" width="6" height="1" fill="#f59e0b"/>
+            <rect x="2" y="5" width="4" height="1" fill="#f59e0b"/>
+            <rect x="3" y="6" width="2" height="1" fill="#f59e0b"/>
+          </svg>
+          <div class="meta"><span>V3</span><span>EIER:AS</span></div>
+        </div>
+      </div>
+      <div class="option-foot">
+        <h3>NES / 8-bit</h3>
+        <p>Chunky, blocky, hard-edge. 4-color palettes, big chunky fonts. Unmistakably retro. <span class="risk">Risk: can read kitsch on a clinical tool.</span></p>
+      </div>
+    </article>
+
+    <article class="option" data-option="B" data-name="SNES / 16-bit JRPG" onclick="select(this)">
+      <div class="option-head">
+        <span class="letter">B</span>
+        <span class="label">SNES · 16-BIT JRPG</span>
+      </div>
+      <div class="option-stage">
+        <div class="mock-snes px">
+          <span class="tag">◆ PROSEDYRE</span>
+          <h4>Hjertestans</h4>
+          <p>Brystkomp. 30:2 · defib hvert 2. min · adrenalin 1mg iv</p>
+          <div class="meta"><span>V3</span><span>EIER · AS</span></div>
+        </div>
+      </div>
+      <div class="option-foot">
+        <h3>SNES / 16-bit JRPG</h3>
+        <p>Rich detail, dithered gradients, ornate menu-style borders. Adventurous warmth. <span class="risk">Sweet spot for "fun without being a toy."</span></p>
+      </div>
+    </article>
+
+    <article class="option" data-option="C" data-name="Modern indie pixel" onclick="select(this)">
+      <div class="option-head">
+        <span class="letter">C</span>
+        <span class="label">MODERN INDIE</span>
+      </div>
+      <div class="option-stage">
+        <div class="mock-indie">
+          <span class="tag">★ Prosedyre</span>
+          <h4>Hjertestans</h4>
+          <svg class="sprite px" viewBox="0 0 12 12" shape-rendering="crispEdges">
+            <rect x="2" y="2" width="3" height="3" fill="#a64a4a"/>
+            <rect x="7" y="2" width="3" height="3" fill="#a64a4a"/>
+            <rect x="1" y="3" width="10" height="4" fill="#a64a4a"/>
+            <rect x="2" y="7" width="8" height="2" fill="#a64a4a"/>
+            <rect x="3" y="9" width="6" height="1" fill="#a64a4a"/>
+            <rect x="4" y="10" width="4" height="1" fill="#a64a4a"/>
+            <rect x="5" y="11" width="2" height="1" fill="#a64a4a"/>
+            <rect x="3" y="3" width="1" height="1" fill="#d27474"/>
+            <rect x="4" y="4" width="1" height="1" fill="#d27474"/>
+          </svg>
+          <p>Brystkomp. 30:2 · defib hvert 2. min</p>
+          <div class="meta"><span>v3</span><span>Eier: AS</span></div>
+        </div>
+      </div>
+      <div class="option-foot">
+        <h3>Modern indie pixel</h3>
+        <p>Painterly, atmospheric, soft palette (think Stardew / Eastward). Pixel as stylistic choice. <span class="risk">Most cohesive with a "field guide" tone.</span></p>
+      </div>
+    </article>
+
+    <article class="option" data-option="D" data-name="GameBoy DMG · amber" onclick="select(this)">
+      <div class="option-head">
+        <span class="letter">D</span>
+        <span class="label">GAMEBOY DMG · AMBER</span>
+      </div>
+      <div class="option-stage">
+        <div class="mock-gb px">
+          <div class="frame">
+            <span class="tag">PROSEDYRE</span>
+            <h4>HJERTE-<br>STANS</h4>
+            <svg class="sprite" viewBox="0 0 8 8" shape-rendering="crispEdges">
+              <rect x="1" y="1" width="2" height="2" fill="#f59e0b"/>
+              <rect x="5" y="1" width="2" height="2" fill="#f59e0b"/>
+              <rect x="0" y="2" width="8" height="2" fill="#f59e0b"/>
+              <rect x="1" y="4" width="6" height="1" fill="#b07000"/>
+              <rect x="2" y="5" width="4" height="1" fill="#b07000"/>
+              <rect x="3" y="6" width="2" height="1" fill="#b07000"/>
+            </svg>
+            <div class="meta"><span>V3</span><span>AS</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="option-foot">
+        <h3>GameBoy DMG · amber</h3>
+        <p>4-shade amber-on-dark monochrome. Severe constraint, intimate scale, pixel typography. <span class="risk">Strongest tonal continuity with the current app.</span></p>
+      </div>
+    </article>
+
+  </div>
+
+  <script>
+    function select(el) {
+      document.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+      el.classList.add('selected');
+      const bar = document.getElementById('selected');
+      const name = el.getAttribute('data-name');
+      const letter = el.getAttribute('data-option');
+      document.getElementById('selectedName').textContent = letter + ' · ' + name;
+      bar.classList.add('active');
+      bar.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  </script>
+</body>
+</html>

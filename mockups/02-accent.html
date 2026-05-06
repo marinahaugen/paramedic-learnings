@@ -1,0 +1,414 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pixel Art Redesign · Decision 02 — Cream + Accent</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Pixelify+Sans:wght@400;500;700&family=VT323&family=IBM+Plex+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0c0a09;
+      --surface: #1c1917;
+      --raised: #292524;
+      --border: #44403c;
+      --text: #fafaf9;
+      --muted: #a8a29e;
+      --faint: #57534e;
+      --accent: #f59e0b;
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'IBM Plex Mono', monospace;
+      margin: 0; padding: 0;
+      min-height: 100vh;
+    }
+    body {
+      background-image:
+        repeating-linear-gradient(0deg, transparent 0 47px, rgba(245,158,11,0.025) 47px 48px),
+        radial-gradient(ellipse at 20% 0%, rgba(245,158,11,0.06), transparent 60%);
+    }
+    header.page {
+      padding: 28px 48px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex; justify-content: space-between; align-items: end;
+      flex-wrap: wrap; gap: 12px;
+    }
+    header.page .crumb { font-size: 11px; letter-spacing: 0.18em; color: var(--accent); text-transform: uppercase; }
+    header.page h1 { margin: 4px 0 0; font-family: 'Press Start 2P', monospace; font-size: 22px; color: var(--text); letter-spacing: 0.04em; }
+    header.page .meta { font-size: 11px; color: var(--faint); letter-spacing: 0.14em; text-transform: uppercase; }
+    .question { padding: 24px 48px 8px; font-size: 14px; color: var(--muted); letter-spacing: 0.04em; max-width: 920px; line-height: 1.7; }
+    .question strong { color: var(--text); }
+    .past {
+      margin: 0 48px; padding: 10px 16px;
+      background: rgba(245,158,11,0.04);
+      border-left: 3px solid var(--accent);
+      font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted);
+    }
+    .past .pick { color: var(--accent); margin-left: 6px; }
+    .past .file { color: var(--faint); margin-left: 6px; text-transform: none; letter-spacing: 0.04em; }
+    .past .file a { color: var(--faint); text-decoration: none; border-bottom: 1px dotted var(--faint); }
+    .past .file a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+    .filter-note {
+      margin: 12px 48px 0;
+      padding: 10px 16px;
+      background: rgba(245,200,117,0.06);
+      border-left: 3px solid #f5c875;
+      font-size: 12px; line-height: 1.55;
+      color: var(--muted);
+    }
+    .filter-note strong { color: #f5c875; letter-spacing: 0.06em; }
+    .selected-bar {
+      margin: 12px 48px 0; padding: 12px 18px;
+      background: rgba(245,158,11,0.06);
+      border: 1px dashed var(--accent);
+      color: var(--accent);
+      font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+      display: none;
+    }
+    .selected-bar.active { display: block; }
+    .grid {
+      display: grid; grid-template-columns: repeat(2, 1fr);
+      gap: 28px; padding: 24px 48px 64px;
+    }
+    @media (max-width: 1100px) {
+      .grid { grid-template-columns: 1fr; padding: 24px 24px 64px; }
+      header.page { padding: 24px; }
+      .question { padding: 18px 24px 8px; }
+      .past, .filter-note { margin: 0 24px; }
+      .selected-bar { margin: 12px 24px 0; }
+    }
+    .option {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
+      overflow: hidden;
+      display: flex; flex-direction: column;
+    }
+    .option:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 14px 32px rgba(0,0,0,0.5); }
+    .option.selected { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(245,158,11,0.45), 0 14px 32px rgba(0,0,0,0.5); }
+    .option-head { display: flex; justify-content: space-between; align-items: baseline; padding: 14px 20px; border-bottom: 1px solid var(--border); }
+    .option-head .letter { font-family: 'Press Start 2P', monospace; font-size: 22px; color: var(--accent); }
+    .option-head .label { font-size: 10px; letter-spacing: 0.18em; color: var(--muted); text-transform: uppercase; }
+    .option-stage { padding: 28px 24px; display: flex; justify-content: center; align-items: center; min-height: 360px; background: radial-gradient(ellipse at 30% 20%, rgba(245,235,216,0.06), transparent 60%), var(--surface); }
+    .option-foot { padding: 16px 20px 18px; border-top: 1px solid var(--border); background: var(--bg); }
+    .option-foot h3 { margin: 0 0 6px; font-family: 'Press Start 2P', monospace; font-size: 12px; color: var(--text); letter-spacing: 0.04em; }
+    .option-foot p { margin: 0; font-size: 12px; line-height: 1.55; color: var(--muted); }
+    .option-foot p .ref { color: var(--accent); }
+    .option-foot p .risk { color: var(--faint); font-style: italic; }
+    .swatches { display: flex; gap: 4px; margin-top: 10px; }
+    .swatches .sw { width: 14px; height: 14px; border: 1px solid var(--border); }
+    .px { image-rendering: pixelated; image-rendering: crisp-edges; }
+
+    /* Shared mock card structure - all cream-base, painterly, modern indie pixel.
+       Only accent color & sprite vary. */
+    .mock {
+      width: 290px;
+      padding: 18px;
+      font-family: 'Pixelify Sans', sans-serif;
+      position: relative;
+      overflow: hidden;
+    }
+    .mock .tag {
+      display: inline-block;
+      padding: 3px 9px;
+      font-size: 12px; font-weight: 700; letter-spacing: 0.06em;
+      margin-bottom: 10px;
+      font-family: 'Pixelify Sans', sans-serif;
+    }
+    .mock h4 { margin: 0 0 4px; font-size: 26px; font-weight: 700; line-height: 1.05; color: #2c2620; }
+    .mock .sub {
+      font-size: 11px; letter-spacing: 0.10em; text-transform: uppercase;
+      margin-bottom: 12px; font-family: 'IBM Plex Mono', monospace;
+      color: #8a7657;
+    }
+    .mock .row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; position: relative; z-index: 1; }
+    .mock .sprite { width: 56px; height: 56px; flex-shrink: 0; }
+    .mock p { margin: 0; font-size: 14px; line-height: 1.4; color: #5a4a36; }
+    .mock .meta {
+      font-size: 11px; letter-spacing: 0.06em; padding-top: 8px;
+      display: flex; justify-content: space-between;
+      font-family: 'IBM Plex Mono', monospace; color: #8a7657;
+      border-top: 1px dashed #c8b48d;
+      position: relative; z-index: 1;
+    }
+    .mock::before {
+      content: ''; position: absolute; inset: 0;
+      background-image:
+        radial-gradient(circle at 22% 14%, rgba(91,74,54,0.13) 0 1px, transparent 2px),
+        radial-gradient(circle at 78% 64%, rgba(91,74,54,0.10) 0 1px, transparent 2px);
+      background-size: 13px 13px, 17px 17px;
+      pointer-events: none;
+    }
+
+    /* === A: Cream + Amber/Gold === */
+    .mock-a {
+      background: #f3e7cd;
+      border: 2px solid #2c2620;
+      box-shadow: 5px 5px 0 #c8923a;
+    }
+    .mock-a .tag { background: #c8923a; color: #2c1f10; }
+
+    /* === B: Cream + Dusty Rose === */
+    .mock-b {
+      background: #f5e8d8;
+      border: 2px solid #2c2620;
+      box-shadow: 5px 5px 0 #b87474;
+    }
+    .mock-b .tag { background: #b87474; color: #f5e8d8; }
+
+    /* === C: Cream + Dusty Teal === */
+    .mock-c {
+      background: #f3eadc;
+      border: 2px solid #2c2620;
+      box-shadow: 5px 5px 0 #5a8a8c;
+    }
+    .mock-c .tag { background: #5a8a8c; color: #f3eadc; }
+
+    /* === D: Bone Paper + Restrained Red === */
+    .mock-d {
+      background: #ece4d2;
+      border: 2px solid #2c2620;
+      box-shadow: 5px 5px 0 #2c2620;
+    }
+    .mock-d .tag { background: #c84a4a; color: #f8f0e0; }
+
+    /* progress dots */
+    .progress { padding: 0 48px 24px; display: flex; gap: 6px; align-items: center; }
+    .progress .dot { width: 8px; height: 8px; background: var(--border); }
+    .progress .dot.done { background: var(--accent); opacity: 0.5; }
+    .progress .dot.active { background: var(--accent); }
+    .progress .label { margin-left: 12px; font-size: 10px; letter-spacing: 0.18em; color: var(--faint); text-transform: uppercase; }
+    @media (max-width: 1100px) { .progress { padding: 0 24px 24px; } }
+  </style>
+</head>
+<body>
+  <header class="page">
+    <div>
+      <div class="crumb">PARAMEDIC LEARNINGS · DESIGN BRIEF</div>
+      <h1>DECISION 02 &nbsp;—&nbsp; CREAM + WHICH ACCENT?</h1>
+    </div>
+    <div class="meta">04 OPTIONS · CREAM-BASE · NO GREEN</div>
+  </header>
+
+  <div class="progress">
+    <div class="dot done"></div>
+    <div class="dot active"></div>
+    <div class="dot"></div>
+    <span class="label">02 / 03 — ACCENT (LAST QUESTION)</span>
+  </div>
+
+  <div class="past">
+    LOCKED:
+    <span>D01 · Era →</span>
+    <span class="pick">C · Modern indie pixel · cream/light</span>
+    <span class="file">(<a href="01-era.html" target="_blank">view</a>)</span>
+  </div>
+
+  <div class="filter-note">
+    <strong>FIX:</strong> Last slate had me anchoring to "Stardew almanac green" — but you flagged that you want the
+    <em>cream/light feel</em>, not the green. New slate: every option uses the same cream paper base, same Pixelify Sans
+    + IBM Plex Mono, same layout. <em>Only the accent color and sprite vary.</em>
+  </div>
+
+  <p class="question">
+    Cream paper is locked in. Pick the accent color that sits on top of it. <strong>This is the last question</strong> — after this I'll present 2–3 full-page mockups (homepage + topic list + topic form).
+  </p>
+
+  <div id="selected" class="selected-bar">SELECTED → <span id="selectedName"></span> &nbsp;·&nbsp; tell Claude in the terminal to lock it in.</div>
+
+  <div class="grid">
+
+    <article class="option" data-option="A" data-name="Cream + Amber/Gold (current accent preserved)" onclick="select(this)">
+      <div class="option-head">
+        <span class="letter">A</span>
+        <span class="label">CREAM + AMBER · PRESERVES CURRENT</span>
+      </div>
+      <div class="option-stage">
+        <div class="mock mock-a px">
+          <span class="tag">★ PROSEDYRE</span>
+          <h4>Hjertestans</h4>
+          <div class="sub">VOKSEN · AVANSERT HLR</div>
+          <div class="row">
+            <svg class="sprite px" viewBox="0 0 16 16" shape-rendering="crispEdges">
+              <!-- Brass compass / medal -->
+              <rect x="5" y="2" width="6" height="1" fill="#8a6020"/>
+              <rect x="4" y="3" width="8" height="1" fill="#a87830"/>
+              <rect x="3" y="4" width="10" height="2" fill="#c8923a"/>
+              <rect x="2" y="6" width="12" height="6" fill="#e8b860"/>
+              <rect x="3" y="12" width="10" height="1" fill="#c8923a"/>
+              <rect x="4" y="13" width="8" height="1" fill="#a87830"/>
+              <rect x="5" y="14" width="6" height="1" fill="#8a6020"/>
+              <rect x="7" y="7" width="2" height="4" fill="#2c1f10"/>
+              <rect x="6" y="8" width="4" height="1" fill="#2c1f10"/>
+              <rect x="8" y="8" width="1" height="3" fill="#fff5d4"/>
+            </svg>
+            <p>Brystkomp. 30:2 · defib hvert 2. min · adrenalin 1mg iv</p>
+          </div>
+          <div class="meta"><span>v3 · publisert</span><span>Eier: AS</span></div>
+        </div>
+      </div>
+      <div class="option-foot">
+        <h3>Cream + Amber/Gold</h3>
+        <p><span class="ref">Reference: Hilda's almanac, brass compass, lamplit field notes.</span> Warm cream + amber/honey accent — <strong>preserves your existing <code>--accent: #f59e0b</code></strong> while flipping the surface from dark to cream. Smallest token rewrite. <span class="risk">RECOMMENDED.</span></p>
+        <div class="swatches">
+          <span class="sw" style="background:#f3e7cd"></span>
+          <span class="sw" style="background:#2c2620"></span>
+          <span class="sw" style="background:#c8923a"></span>
+          <span class="sw" style="background:#e8b860"></span>
+          <span class="sw" style="background:#8a7657"></span>
+        </div>
+      </div>
+    </article>
+
+    <article class="option" data-option="B" data-name="Cream + Dusty Rose" onclick="select(this)">
+      <div class="option-head">
+        <span class="letter">B</span>
+        <span class="label">CREAM + DUSTY ROSE</span>
+      </div>
+      <div class="option-stage">
+        <div class="mock mock-b px">
+          <span class="tag">★ PROSEDYRE</span>
+          <h4>Hjertestans</h4>
+          <div class="sub">VOKSEN · AVANSERT HLR</div>
+          <div class="row">
+            <svg class="sprite px" viewBox="0 0 16 16" shape-rendering="crispEdges">
+              <!-- Pressed flower / heart in dusty rose -->
+              <rect x="3" y="3" width="3" height="3" fill="#d68a8a"/>
+              <rect x="10" y="3" width="3" height="3" fill="#d68a8a"/>
+              <rect x="2" y="4" width="12" height="4" fill="#c87474"/>
+              <rect x="3" y="8" width="10" height="2" fill="#b06060"/>
+              <rect x="4" y="10" width="8" height="1" fill="#b06060"/>
+              <rect x="5" y="11" width="6" height="1" fill="#a04848"/>
+              <rect x="6" y="12" width="4" height="1" fill="#a04848"/>
+              <rect x="7" y="13" width="2" height="1" fill="#a04848"/>
+              <rect x="4" y="4" width="1" height="1" fill="#f5d4d4"/>
+              <rect x="5" y="5" width="1" height="1" fill="#f5d4d4"/>
+              <rect x="11" y="4" width="1" height="1" fill="#f5d4d4"/>
+            </svg>
+            <p>Brystkomp. 30:2 · defib hvert 2. min · adrenalin 1mg iv</p>
+          </div>
+          <div class="meta"><span>v3 · publisert</span><span>Eier: AS</span></div>
+        </div>
+      </div>
+      <div class="option-foot">
+        <h3>Cream + Dusty Rose</h3>
+        <p><span class="ref">Reference: pressed-flower journals, Chicory, Hilda's softer scenes.</span> Warm cream + dusty rose. Gentle, human, has heart-coloured warmth — fitting for a *medical* app. <span class="risk">Drops your amber thread; full token rewrite.</span></p>
+        <div class="swatches">
+          <span class="sw" style="background:#f5e8d8"></span>
+          <span class="sw" style="background:#2c2620"></span>
+          <span class="sw" style="background:#b87474"></span>
+          <span class="sw" style="background:#d68a8a"></span>
+          <span class="sw" style="background:#8a7657"></span>
+        </div>
+      </div>
+    </article>
+
+    <article class="option" data-option="C" data-name="Cream + Dusty Teal" onclick="select(this)">
+      <div class="option-head">
+        <span class="letter">C</span>
+        <span class="label">CREAM + DUSTY TEAL</span>
+      </div>
+      <div class="option-stage">
+        <div class="mock mock-c px">
+          <span class="tag">★ PROSEDYRE</span>
+          <h4>Hjertestans</h4>
+          <div class="sub">VOKSEN · AVANSERT HLR</div>
+          <div class="row">
+            <svg class="sprite px" viewBox="0 0 16 16" shape-rendering="crispEdges">
+              <!-- Feather quill in dusty teal -->
+              <rect x="11" y="2" width="2" height="2" fill="#9ac0c2"/>
+              <rect x="10" y="3" width="3" height="2" fill="#7ba8aa"/>
+              <rect x="9" y="4" width="4" height="2" fill="#5a8a8c"/>
+              <rect x="8" y="5" width="4" height="2" fill="#7ba8aa"/>
+              <rect x="7" y="6" width="4" height="2" fill="#5a8a8c"/>
+              <rect x="6" y="7" width="4" height="2" fill="#7ba8aa"/>
+              <rect x="5" y="8" width="4" height="2" fill="#5a8a8c"/>
+              <rect x="4" y="9" width="4" height="2" fill="#3e6a6c"/>
+              <rect x="3" y="10" width="3" height="2" fill="#3e6a6c"/>
+              <rect x="2" y="11" width="3" height="1" fill="#2c4848"/>
+              <rect x="1" y="12" width="2" height="1" fill="#2c4848"/>
+              <rect x="2" y="13" width="2" height="1" fill="#3e6a6c"/>
+              <rect x="3" y="14" width="2" height="1" fill="#3e6a6c"/>
+            </svg>
+            <p>Brystkomp. 30:2 · defib hvert 2. min · adrenalin 1mg iv</p>
+          </div>
+          <div class="meta"><span>v3 · publisert</span><span>Eier: AS</span></div>
+        </div>
+      </div>
+      <div class="option-foot">
+        <h3>Cream + Dusty Teal</h3>
+        <p><span class="ref">Reference: Hilda's bookshelves, vintage botanical plates, naval-blue notebooks.</span> Warm cream + dusty seafoam teal. Calm, scholarly, slightly cooler. <span class="risk">Drops amber. Quietest of the four.</span></p>
+        <div class="swatches">
+          <span class="sw" style="background:#f3eadc"></span>
+          <span class="sw" style="background:#2c2620"></span>
+          <span class="sw" style="background:#5a8a8c"></span>
+          <span class="sw" style="background:#9ac0c2"></span>
+          <span class="sw" style="background:#8a7657"></span>
+        </div>
+      </div>
+    </article>
+
+    <article class="option" data-option="D" data-name="Bone Paper + Restrained Red" onclick="select(this)">
+      <div class="option-head">
+        <span class="letter">D</span>
+        <span class="label">BONE PAPER + RESTRAINED RED</span>
+      </div>
+      <div class="option-stage">
+        <div class="mock mock-d px">
+          <span class="tag">★ PROSEDYRE</span>
+          <h4>Hjertestans</h4>
+          <div class="sub">VOKSEN · AVANSERT HLR</div>
+          <div class="row">
+            <svg class="sprite px" viewBox="0 0 16 16" shape-rendering="crispEdges">
+              <!-- Single red bookmark on plain page -->
+              <rect x="2" y="1" width="11" height="14" fill="#f8f0e0"/>
+              <rect x="2" y="1" width="11" height="1" fill="#dad2c0"/>
+              <rect x="2" y="14" width="11" height="1" fill="#dad2c0"/>
+              <rect x="4" y="4" width="6" height="1" fill="#a8a08c"/>
+              <rect x="4" y="6" width="7" height="1" fill="#a8a08c"/>
+              <rect x="4" y="8" width="5" height="1" fill="#a8a08c"/>
+              <rect x="4" y="10" width="6" height="1" fill="#a8a08c"/>
+              <!-- red bookmark -->
+              <rect x="11" y="1" width="2" height="6" fill="#c84a4a"/>
+              <rect x="11" y="7" width="1" height="1" fill="#c84a4a"/>
+              <rect x="12" y="7" width="1" height="1" fill="#c84a4a"/>
+            </svg>
+            <p>Brystkomp. 30:2 · defib hvert 2. min · adrenalin 1mg iv</p>
+          </div>
+          <div class="meta"><span>v3 · publisert</span><span>Eier: AS</span></div>
+        </div>
+      </div>
+      <div class="option-foot">
+        <h3>Bone Paper + Restrained Red</h3>
+        <p><span class="ref">Reference: Dishonored documents, Death's Door, clinical paper.</span> Pale bone cream + near-black ink + single red accent for *only* important info (warnings, version flags). Most restrained, most clinical. <span class="risk">Quiet but with weight when red appears.</span></p>
+        <div class="swatches">
+          <span class="sw" style="background:#ece4d2"></span>
+          <span class="sw" style="background:#2c2620"></span>
+          <span class="sw" style="background:#c84a4a"></span>
+          <span class="sw" style="background:#a8a08c"></span>
+          <span class="sw" style="background:#8a7657"></span>
+        </div>
+      </div>
+    </article>
+
+  </div>
+
+  <script>
+    function select(el) {
+      document.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+      el.classList.add('selected');
+      const bar = document.getElementById('selected');
+      const name = el.getAttribute('data-name');
+      const letter = el.getAttribute('data-option');
+      document.getElementById('selectedName').textContent = letter + ' · ' + name;
+      bar.classList.add('active');
+      bar.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  </script>
+</body>
+</html>

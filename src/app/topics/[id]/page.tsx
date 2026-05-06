@@ -32,15 +32,15 @@ export default async function TopicPage({
       <div
         style={{
           fontFamily: "var(--font-ibm-mono)",
-          color: "var(--accent-muted)",
+          color: "var(--accent-deep)",
           fontSize: "10px",
-          letterSpacing: "0.1em",
+          letterSpacing: "0.14em",
           textTransform: "uppercase",
           marginBottom: "8px",
         }}
       >
         <Link href="/topics" style={{ color: "var(--text-muted)", textDecoration: "none" }}>
-          TOPICS
+          EMNER
         </Link>
         {" / "}
         {topic.title}
@@ -49,12 +49,13 @@ export default async function TopicPage({
       {/* Title */}
       <h1
         style={{
-          fontFamily: "var(--font-bebas)",
+          fontFamily: "var(--font-pixel)",
+          fontWeight: 700,
           color: "var(--text-primary)",
-          fontSize: "3rem",
-          letterSpacing: "0.04em",
-          lineHeight: 1,
-          borderTop: "2px solid var(--accent)",
+          fontSize: "2.5rem",
+          letterSpacing: "0.01em",
+          lineHeight: 1.05,
+          borderTop: "2px solid var(--border)",
           paddingTop: "16px",
           marginBottom: "16px",
         }}
@@ -143,7 +144,7 @@ export default async function TopicPage({
                       fontSize: "11px",
                       fontWeight: 700,
                       letterSpacing: "0.08em",
-                      color: "var(--accent-muted)",
+                      color: "var(--accent-deep)",
                       textDecoration: "none",
                     }}
                   >

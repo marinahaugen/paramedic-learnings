@@ -22,6 +22,13 @@
       "when": 1778059581469,
       "tag": "0002_mighty_norman_osborn",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1778064088679,
+      "tag": "0003_large_morlocks",
+      "breakpoints": true
     }
   ]
 }
