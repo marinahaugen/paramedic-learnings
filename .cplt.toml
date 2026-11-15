@@ -1,0 +1,9 @@
+# cplt sandbox policy — for AI code agents running inside Nav's cplt sandbox.
+# cplt is open-source (MIT): https://github.com/navikt/cplt
+# This file is ignored when cplt is not installed.
+#
+# [propose.allow] suggests these ports but requires the developer to approve
+# them with `cplt trust accept --all` before they take effect.
+
+[propose.allow]
+localhost = [3000, 15432]  # Next.js dev server + local Postgres (Docker)
